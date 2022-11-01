@@ -1,5 +1,8 @@
-package aasmc.ru
+package aasmc.ru.database
 
+import aasmc.ru.database.dao.DAOFacade
+import aasmc.ru.database.dao.DAOFacadeCacheImpl
+import aasmc.ru.database.dao.DAOFacadeImpl
 import aasmc.ru.models.*
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -13,18 +16,19 @@ import java.io.File
 
 object DatabaseFactory {
     lateinit var dao: DAOFacade
+    lateinit var daoCache: DAOFacade
     fun init(config: ApplicationConfig) {
         val driverName = config.property("storage.driverClassName").getString()
         val jdbcUrl = config.property("storage.jdbcURL").getString() +
                 (config.propertyOrNull("storage.dbFilePath")?.getString()?.let {
                     File(it).canonicalFile.absolutePath
                 } ?: "")
-        val driverClassName = "org.h2.Driver"
-        val jdbcURL = "jdbc:h2:file:./build/db"
-        val database = Database.connect(createHikariDataSource(
-            url = jdbcUrl,
-            driver = driverName
-        ))
+        val database = Database.connect(
+            createHikariDataSource(
+                url = jdbcUrl,
+                driver = driverName
+            )
+        )
 
         transaction(database) {
             SchemaUtils.create(CustomersTable)
@@ -32,6 +36,8 @@ object DatabaseFactory {
             SchemaUtils.create(OrderItems)
         }
         dao = DAOFacadeImpl()
+        val cacheFile = File(config.property("storage.ehcacheFilePath").getString())
+        daoCache = DAOFacadeCacheImpl(dao, cacheFile)
     }
 
     private fun createHikariDataSource(

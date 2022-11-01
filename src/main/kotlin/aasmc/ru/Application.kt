@@ -1,5 +1,6 @@
 package aasmc.ru
 
+import aasmc.ru.database.DatabaseFactory
 import io.ktor.server.application.*
 import aasmc.ru.plugins.*
 

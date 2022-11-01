@@ -1,6 +1,7 @@
-package aasmc.ru.models
+package aasmc.ru.database.dao
 
-import aasmc.ru.DatabaseFactory.dbQuery
+import aasmc.ru.database.DatabaseFactory.dbQuery
+import aasmc.ru.models.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll

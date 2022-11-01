@@ -1,4 +1,7 @@
-package aasmc.ru.models
+package aasmc.ru.database.dao
+
+import aasmc.ru.models.Customer
+import aasmc.ru.models.Order
 
 interface DAOFacade {
     suspend fun allCustomers(): List<Customer>

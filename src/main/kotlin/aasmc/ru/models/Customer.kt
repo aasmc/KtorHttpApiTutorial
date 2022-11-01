@@ -12,7 +12,7 @@ data class Customer(
     val firstName: String,
     val lastName: String,
     val email: String
-)
+): java.io.Serializable
 
 object CustomersTable : IntIdTable("customers") {
     val firstName = varchar("firstName", 25)
