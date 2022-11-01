@@ -1,7 +1,7 @@
 package aasmc.ru.routes
 
+import aasmc.ru.DatabaseFactory.dao
 import aasmc.ru.models.Order
-import aasmc.ru.models.orderStorage
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,15 +11,16 @@ import io.ktor.server.routing.*
 fun Route.postOrderRoute() {
     post {
         val order = call.receive<Order>()
-        orderStorage.add(order)
+        dao.addNewOrder(order)
         call.respondText("Order stored correctly", status = HttpStatusCode.Created)
     }
 }
 
 fun Route.listOrderRoute() {
     get("/order") {
-        if (orderStorage.isNotEmpty()) {
-            call.respond(orderStorage)
+        val orders = dao.allOrders()
+        if (orders.isNotEmpty()) {
+            call.respond(orders)
         }
     }
 }
@@ -27,7 +28,7 @@ fun Route.listOrderRoute() {
 fun Route.getOrderRoute() {
     get("/order/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respondText("Bad request", status = HttpStatusCode.BadRequest)
-        val order = orderStorage.find { it.number == id } ?: return@get call.respondText(
+        val order = dao.order(id) ?: return@get call.respondText(
             "Not Found",
             status = HttpStatusCode.NotFound
         )
@@ -40,9 +41,10 @@ fun Route.totalizeOrderRoute() {
         val id = call.parameters["id"]
             ?: return@get call.respondText("Bad Request", status = HttpStatusCode.BadRequest)
 
-        val order = orderStorage.find { it.number == id }
-            ?: return@get call.respondText("Not Found", status = HttpStatusCode.NotFound)
-        val total = order.contents.sumOf { it.price * it.amount }
+        val total = dao.totalAmountForOrder(id)
+        if (total.compareTo(-1.0) == 0) {
+            return@get call.respondText("Not Found", status = HttpStatusCode.NotFound)
+        }
         call.respond(total)
     }
 }

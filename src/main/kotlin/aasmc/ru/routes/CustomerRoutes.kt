@@ -1,7 +1,7 @@
 package aasmc.ru.routes
 
+import aasmc.ru.DatabaseFactory.dao
 import aasmc.ru.models.Customer
-import aasmc.ru.models.customerStorage
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,8 +11,9 @@ import io.ktor.server.routing.*
 fun Route.customerRouting() {
     route("/customer") {
         get {
-            if (customerStorage.isNotEmpty()) {
-                call.respond(customerStorage)
+            val customers = dao.allCustomers()
+            if (customers.isNotEmpty()) {
+                call.respond(customers)
             } else {
                 call.respondText("No customers found", status = HttpStatusCode.OK)
             }
@@ -23,7 +24,8 @@ fun Route.customerRouting() {
                 "Missing id",
                 status = HttpStatusCode.BadRequest
             )
-            val customer = customerStorage.find { it.id == id } ?: return@get call.respondText(
+
+            val customer = dao.customer(id) ?: return@get call.respondText(
                 "No customer with id $id",
                 status = HttpStatusCode.NotFound
             )
@@ -32,13 +34,14 @@ fun Route.customerRouting() {
 
         post {
             val customer = call.receive<Customer>()
-            customerStorage.add(customer)
+            dao.addNewCustomer(customer)
             call.respondText("Customer stored correctly", status = HttpStatusCode.Created)
         }
 
         delete("{id?}") {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            if (customerStorage.removeIf { it.id == id }) {
+            val deleted = dao.deleteCustomer(id)
+            if (deleted) {
                 call.respondText("Customer removed successfully", status = HttpStatusCode.Accepted)
             } else {
                 call.respondText("Not Found", status = HttpStatusCode.NotFound)
