@@ -34,7 +34,10 @@ fun Route.customerRouting(dao: DAOFacade) {
 
         post {
             val customer = call.receive<Customer>()
-            dao.addNewCustomer(customer)
+            dao.addNewCustomer(customer) ?: kotlin.run {
+                call.respondText("Customer with the same id is already present in the DB", status = HttpStatusCode.Conflict)
+                return@post
+            }
             call.respondText("Customer stored correctly", status = HttpStatusCode.Created)
         }
 

@@ -53,9 +53,11 @@ class DAOFacadeCacheImpl(
             }
         }
 
-    override suspend fun addNewCustomer(customer: Customer): Customer =
+    override suspend fun addNewCustomer(customer: Customer): Customer? =
         delegate.addNewCustomer(customer).also { saved ->
-            customersCache.put(saved.id.toInt(), saved)
+            saved?.let {
+                customersCache.put(it.id.toInt(), it)
+            }
         }
 
     override suspend fun deleteCustomer(id: String): Boolean {

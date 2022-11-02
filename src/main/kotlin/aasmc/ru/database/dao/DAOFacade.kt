@@ -6,7 +6,7 @@ import aasmc.ru.models.Order
 interface DAOFacade {
     suspend fun allCustomers(): List<Customer>
     suspend fun customer(id: String): Customer?
-    suspend fun addNewCustomer(customer: Customer): Customer
+    suspend fun addNewCustomer(customer: Customer): Customer?
     suspend fun deleteCustomer(id: String): Boolean
 
     suspend fun hasOrders(): Boolean

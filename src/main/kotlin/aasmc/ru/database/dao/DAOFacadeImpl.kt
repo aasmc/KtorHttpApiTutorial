@@ -3,8 +3,8 @@ package aasmc.ru.database.dao
 import aasmc.ru.database.DatabaseFactory.dbQuery
 import aasmc.ru.models.*
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.selectAll
+import org.h2.jdbc.JdbcBatchUpdateException
+import org.jetbrains.exposed.sql.*
 
 class DAOFacadeImpl : DAOFacade {
 
@@ -56,7 +56,12 @@ class DAOFacadeImpl : DAOFacade {
         mapEntityToCustomer(entity)
     }
 
-    override suspend fun addNewCustomer(customer: Customer): Customer = dbQuery {
+    override suspend fun addNewCustomer(customer: Customer): Customer? = dbQuery {
+        val exists = CustomersTable.select { CustomersTable.id eq customer.id.toInt() }
+            .count() == 1L
+        if (exists) {
+            return@dbQuery null
+        }
         val entity = CustomerEntity.new(customer.id.toInt()) {
             firstName = customer.firstName
             lastName = customer.lastName
@@ -65,13 +70,14 @@ class DAOFacadeImpl : DAOFacade {
         mapEntityToCustomer(entity)
     }
 
+
     override suspend fun deleteCustomer(id: String): Boolean = dbQuery {
         val entity = CustomerEntity.findById(id.toInt()) ?: return@dbQuery false
         entity.delete()
         return@dbQuery true
     }
 
-    override suspend fun hasOrders(): Boolean = dbQuery{
+    override suspend fun hasOrders(): Boolean = dbQuery {
         !Orders.selectAll().empty()
     }
 
@@ -97,8 +103,8 @@ class DAOFacadeImpl : DAOFacade {
         val entities = OrderEntity.all()
         if (entities.empty()) return@dbQuery emptyList<Order>()
         entities.map { entity ->
-                mapToOrder(entity)
-            }
+            mapToOrder(entity)
+        }
     }
 
     private fun mapToOrder(entity: OrderEntity): Order {
