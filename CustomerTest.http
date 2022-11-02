@@ -1,5 +1,6 @@
 POST http://127.0.0.1:8080/customer
 Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 {
   "id": "100",
@@ -12,6 +13,7 @@ Content-Type: application/json
 ###
 POST http://127.0.0.1:8080/customer
 Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 {
   "id": "200",
@@ -23,6 +25,7 @@ Content-Type: application/json
 ###
 POST http://127.0.0.1:8080/customer
 Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 {
   "id": "300",
@@ -34,17 +37,25 @@ Content-Type: application/json
 ###
 GET http://127.0.0.1:8080/customer
 Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 ###
 GET http://127.0.0.1:8080/customer/200
 Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 ###
 GET http://127.0.0.1:8080/customer/500
 Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
+
+###
+DELETE http://127.0.0.1:8080/customer/100
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
 
 ###
 DELETE http://127.0.0.1:8080/customer/100
 
 ###
 DELETE http://127.0.0.1:8080/customer/500
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4

@@ -1,0 +1,34 @@
+POST http://127.0.0.1:8080/signup
+Content-Type: application/json
+
+{
+  "username": "testUsername",
+  "password": "testPassword"
+}
+
+###
+POST http://127.0.0.1:8080/signin
+Content-Type: application/json
+
+{
+  "username": "testUsername",
+  "password": "testPassword"
+}
+
+###
+POST http://127.0.0.1:8080/signup
+Content-Type: application/json
+
+{
+"username": "secondUser",
+"password": "secondUserPassword"
+}
+
+###
+POST http://127.0.0.1:8080/signin
+Content-Type: application/json
+
+{
+  "username": "secondUser",
+  "password": "secondUserPassword"
+}

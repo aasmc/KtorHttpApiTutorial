@@ -4,6 +4,9 @@ import aasmc.ru.database.dao.DAOFacade
 import aasmc.ru.database.dao.DAOFacadeCacheImpl
 import aasmc.ru.database.dao.DAOFacadeImpl
 import aasmc.ru.models.*
+import aasmc.ru.security.database.dao.SecurityDAOFacade
+import aasmc.ru.security.database.dao.SecurityDAOFacadeImpl
+import aasmc.ru.security.model.user.UsersTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.config.*
@@ -17,6 +20,7 @@ import java.io.File
 object DatabaseFactory {
     lateinit var dao: DAOFacade
     lateinit var daoCache: DAOFacade
+    lateinit var securityDao: SecurityDAOFacade
     fun init(config: ApplicationConfig) {
         val driverName = config.property("storage.driverClassName").getString()
         val jdbcUrl = config.property("storage.jdbcURL").getString() +
@@ -34,10 +38,12 @@ object DatabaseFactory {
             SchemaUtils.create(CustomersTable)
             SchemaUtils.create(Orders)
             SchemaUtils.create(OrderItems)
+            SchemaUtils.create(UsersTable)
         }
         dao = DAOFacadeImpl()
         val cacheFile = File(config.property("storage.ehcacheFilePath").getString())
         daoCache = DAOFacadeCacheImpl(dao, cacheFile)
+        securityDao = SecurityDAOFacadeImpl()
     }
 
     private fun createHikariDataSource(
