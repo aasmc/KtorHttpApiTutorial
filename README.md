@@ -5,6 +5,27 @@ Educational project based on official tutorial from Jetbrains: https://ktor.io/d
 ### Persistence
 Currently the app supports persistence via an H2 database, Ehcache, HikariCP and Exposed frameworks.
 
+
+Branch hibernate replaces Exposed and Ehcache to Hibernate framework. There's also a major change in the
+architecture of the application. Now there are three main layers:
+- domain
+- data
+- server
+
+## Domain layer
+Defines business models and provides repository contracts.
+
+## Data layer
+Provides cache interfaces and their implementations, as well as implements repository interfaces of the domain layer
+
+## Server layer
+Operates with interfaces and models of the Domain layer. This decouples it from implementation details. 
+
+## TO DO
+- refactor to use <code>Result\<out T\></code> class in domain repositories
+- check logic to prohibit a user with a token but without registration to perform any operations on the server
+- improve HikariCP configuration 
+
 ### Security
 
 The app uses JWT tokens to provide secure authentication and authorization.

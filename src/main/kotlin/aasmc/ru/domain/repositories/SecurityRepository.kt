@@ -1,8 +1,8 @@
-package aasmc.ru.security.database.dao
+package aasmc.ru.domain.repositories
 
-import aasmc.ru.security.model.user.User
+import aasmc.ru.domain.model.User
 
-interface SecurityDAOFacade {
+interface SecurityRepository {
     suspend fun getUserByUsername(username: String): User?
     suspend fun insertUser(user: User): Boolean
     suspend fun userAlreadyExists(username: String): Boolean

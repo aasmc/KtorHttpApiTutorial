@@ -1,11 +1,16 @@
 package aasmc.ru
 
-import aasmc.ru.database.DatabaseFactory
-import io.ktor.server.application.*
-import aasmc.ru.plugins.*
+import aasmc.ru.data.repositoriesimpl.CustomerRepositoryImpl
+import aasmc.ru.data.repositoriesimpl.OrdersRepositoryImpl
+import aasmc.ru.data.repositoriesimpl.SecurityRepositoryImpl
+import aasmc.ru.plugins.configureMonitoring
+import aasmc.ru.plugins.configureRouting
+import aasmc.ru.plugins.configureSecurity
+import aasmc.ru.plugins.configureSerialization
 import aasmc.ru.security.hashing.SHA256HashingService
 import aasmc.ru.security.token.JwtTokenService
 import aasmc.ru.security.token.TokenConfig
+import io.ktor.server.application.*
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
@@ -22,14 +27,14 @@ fun Application.module() {
     val hashingService = SHA256HashingService()
     val tokenService = JwtTokenService()
 
-    DatabaseFactory.init(this.environment.config)
     configureMonitoring()
     configureSerialization()
     configureSecurity(config = tokenConfig)
     configureRouting(
-        dao = DatabaseFactory.daoCache,
+        customersRepository = CustomerRepositoryImpl(),
+        ordersRepository = OrdersRepositoryImpl(),
         hashingService = hashingService,
-        securityDao = DatabaseFactory.securityDao,
+        securityRepository = SecurityRepositoryImpl(),
         tokenService = tokenService,
         tokenConfig = tokenConfig
     )

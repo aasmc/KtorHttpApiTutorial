@@ -1,17 +1,17 @@
 package aasmc.ru.routes
 
-import aasmc.ru.database.dao.DAOFacade
-import aasmc.ru.models.Customer
+import aasmc.ru.domain.model.Customer
+import aasmc.ru.domain.repositories.CustomersRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.customerRouting(dao: DAOFacade) {
+fun Route.customerRouting(customerRepository: CustomersRepository) {
     route("/customer") {
         get {
-            val customers = dao.allCustomers()
+            val customers = customerRepository.allCustomers()
             if (customers.isNotEmpty()) {
                 call.respond(customers)
             } else {
@@ -25,7 +25,7 @@ fun Route.customerRouting(dao: DAOFacade) {
                 status = HttpStatusCode.BadRequest
             )
 
-            val customer = dao.customer(id) ?: return@get call.respondText(
+            val customer = customerRepository.customer(id) ?: return@get call.respondText(
                 "No customer with id $id",
                 status = HttpStatusCode.NotFound
             )
@@ -34,7 +34,7 @@ fun Route.customerRouting(dao: DAOFacade) {
 
         post {
             val customer = call.receive<Customer>()
-            dao.addNewCustomer(customer) ?: kotlin.run {
+            customerRepository.addNewCustomer(customer) ?: kotlin.run {
                 call.respondText("Customer with the same id is already present in the DB", status = HttpStatusCode.Conflict)
                 return@post
             }
@@ -43,7 +43,7 @@ fun Route.customerRouting(dao: DAOFacade) {
 
         delete("{id?}") {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            val deleted = dao.deleteCustomer(id)
+            val deleted = customerRepository.deleteCustomer(id)
             if (deleted) {
                 call.respondText("Customer removed successfully", status = HttpStatusCode.Accepted)
             } else {

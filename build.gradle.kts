@@ -6,6 +6,8 @@ val h2_version: String by project
 val hikari_version: String by project
 val ehcache_version: String by project
 val commons_codec_version: String by project
+val hibernate_version: String by project
+val javax_persistence_version: String by project
 
 
 plugins {
@@ -13,6 +15,13 @@ plugins {
     kotlin("jvm") version "1.7.20"
     id("io.ktor.plugin") version "2.1.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
+}
+
+
+allOpen {
+    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
 }
 
 group = "aasmc.ru"
@@ -42,6 +51,11 @@ dependencies {
 
     implementation ("com.zaxxer:HikariCP:$hikari_version")
     implementation("org.ehcache:ehcache:$ehcache_version")
+
+    implementation("org.hibernate:hibernate-core:$hibernate_version")
+    implementation("org.hibernate.orm:hibernate-hikaricp:$hibernate_version")
+
+    implementation("javax.persistence:javax.persistence-api:$javax_persistence_version")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")

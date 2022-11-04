@@ -1,11 +1,11 @@
 package aasmc.ru.routes
 
-import aasmc.ru.security.database.dao.SecurityDAOFacade
+import aasmc.ru.domain.model.User
+import aasmc.ru.domain.repositories.SecurityRepository
 import aasmc.ru.security.hashing.HashingService
 import aasmc.ru.security.hashing.SaltedHash
 import aasmc.ru.security.model.requests.AuthRequest
 import aasmc.ru.security.model.responses.AuthResponse
-import aasmc.ru.security.model.user.User
 import aasmc.ru.security.token.TokenClaim
 import aasmc.ru.security.token.TokenConfig
 import aasmc.ru.security.token.TokenService
@@ -18,7 +18,7 @@ import org.apache.commons.codec.digest.DigestUtils
 
 fun Route.signUp(
     hashingService: HashingService,
-    securityDao: SecurityDAOFacade
+    securityRepository: SecurityRepository
 ) {
     post("signup") {
         val request = call.receiveNullable<AuthRequest>() ?: kotlin.run {
@@ -26,7 +26,7 @@ fun Route.signUp(
             return@post
         }
 
-        if (securityDao.userAlreadyExists(request.username)) {
+        if (securityRepository.userAlreadyExists(request.username)) {
             call.respond(HttpStatusCode.Conflict, "User with the same username already exists in the database.")
             return@post
         }
@@ -44,7 +44,7 @@ fun Route.signUp(
             password = saltedHash.hash,
             salt = saltedHash.salt
         )
-        val wasAcknowledged = securityDao.insertUser(user)
+        val wasAcknowledged = securityRepository.insertUser(user)
         if (!wasAcknowledged) {
             call.respond(HttpStatusCode.Conflict)
             return@post
@@ -60,7 +60,7 @@ private fun requestFieldsVerified(request: AuthRequest): Boolean {
 }
 
 fun Route.signIn(
-    securityDao: SecurityDAOFacade,
+    securityRepository: SecurityRepository,
     hashingService: HashingService,
     tokenService: TokenService,
     tokenConfig: TokenConfig
@@ -71,7 +71,7 @@ fun Route.signIn(
             return@post
         }
 
-        val user = securityDao.getUserByUsername(request.username)
+        val user = securityRepository.getUserByUsername(request.username)
         if (user == null) {
             call.respond(HttpStatusCode.Conflict, "Incorrect username or password.")
             return@post
