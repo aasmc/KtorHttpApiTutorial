@@ -3,28 +3,27 @@ package aasmc.ru.data.cache.daos.impl
 import aasmc.ru.data.cache.HibernateSessionFactory
 import aasmc.ru.data.cache.daos.interfaces.CustomersDAO
 import aasmc.ru.data.cache.models.CachedCustomer
-import aasmc.ru.data.cache.withTransaction
-import kotlinx.coroutines.runBlocking
+import aasmc.ru.data.cache.withSession
+import aasmc.ru.domain.model.exceptions.ItemNotFoundException
+import aasmc.ru.domain.model.Result
 import org.hibernate.SessionFactory
 
 class HibernateCustomersDao(
     private val sessionFactory: SessionFactory = HibernateSessionFactory.sessionFactory
 ) : CustomersDAO {
-    override suspend fun allCustomers(): List<CachedCustomer> {
-        val session = sessionFactory.openSession()
-        val resultList = session.withTransaction {
+    override suspend fun allCustomers(): Result<List<CachedCustomer>> {
+        val result = sessionFactory.withSession {
             val query = createQuery(
                 "select c from CachedCustomer c ",
                 CachedCustomer::class.java
             )
-            query.resultList
+            query.resultList.toList()
         }
-        return resultList.toList()
+        return result
     }
 
-    override suspend fun customer(id: String): CachedCustomer? {
-        val session = sessionFactory.openSession()
-        val result = session.withTransaction {
+    override suspend fun customer(id: String): Result<CachedCustomer?> {
+        val result = sessionFactory.withSession {
             val query = createQuery(
                 "select c from CachedCustomer c where c.id = :customerId",
                 CachedCustomer::class.java
@@ -34,34 +33,33 @@ class HibernateCustomersDao(
         return result
     }
 
-    override suspend fun addNewCustomer(customer: CachedCustomer): Boolean? {
-        val session = sessionFactory.openSession()
-        val persisted = session.withTransaction {
-            try {
-                persist(customer)
-                true
-            }catch (e: Exception) {
-                false
-            }
+    override suspend fun addNewCustomer(customer: CachedCustomer): Result<Unit> {
+        val result = sessionFactory.withSession {
+            persist(customer)
         }
-        return persisted
+        return result
     }
 
-    override suspend fun deleteCustomer(id: String): Boolean {
-        val session = sessionFactory.openSession()
-        val deleted = session.withTransaction {
-            val query = createQuery(
-                "select c from CachedCustomer c where c.id = :customerId",
-                CachedCustomer::class.java
-            ).setParameter("customerId", id)
-            val result = query.singleResultOrNull
-            if (result == null) {
-                false
-            } else {
-                session.remove(result)
-                true
+    override suspend fun deleteCustomer(id: String): Result<Unit> {
+        val result = sessionFactory.withSession {
+            createMutationQuery("delete from CachedCustomer where id = :customerId")
+                .setParameter("customerId", id).executeUpdate()
+//            val query = createQuery(
+//                "delete from CachedCustomer where id = :customerId",
+//                CachedCustomer::class.java
+//            ).setParameter("customerId", id)
+//            query.executeUpdate()
+        }
+        return when(result) {
+            is Result.Failure -> result
+            is Result.Success -> {
+                when {
+                    result.data > 0 -> Result.Success(Unit)
+                    else -> Result.Failure(
+                        ItemNotFoundException("Customer with id: $id not found in the database!")
+                    )
+                }
             }
         }
-        return deleted
     }
 }

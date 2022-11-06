@@ -1,6 +1,7 @@
 package aasmc.ru.routes
 
 import aasmc.ru.domain.model.Order
+import aasmc.ru.domain.model.Result
 import aasmc.ru.domain.repositories.OrdersRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -11,28 +12,54 @@ import io.ktor.server.routing.*
 fun Route.postOrderRoute(orderRepository: OrdersRepository) {
     post("/order") {
         val order = call.receive<Order>()
-        orderRepository.addNewOrder(order)
-        call.respondText("Order stored correctly", status = HttpStatusCode.Created)
+        when (orderRepository.addNewOrder(order)) {
+            is Result.Failure -> {
+                call.respond(HttpStatusCode.InternalServerError, "Something went wrong when saving order :$order")
+            }
+            is Result.Success -> {
+                call.respondText("Order stored correctly", status = HttpStatusCode.Created)
+            }
+        }
     }
 }
 
 fun Route.listOrderRoute(orderRepository: OrdersRepository) {
     get("/order") {
-        val orders = orderRepository.allOrders()
-        if (orders.isNotEmpty()) {
-            call.respond(orders)
+        when (val ordersResult = orderRepository.allOrders()) {
+            is Result.Failure -> {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    "Something went wrong when retrieving all orders from DB"
+                )
+            }
+            is Result.Success -> {
+                val orders = ordersResult.data
+                if (orders.isNotEmpty()) {
+                    call.respond(orders)
+                } else {
+                    call.respondText("Sorry, there are currently no orders in the database.")
+                }
+            }
         }
+
     }
 }
 
 fun Route.getOrderRoute(orderRepository: OrdersRepository) {
     get("/order/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respondText("Bad request", status = HttpStatusCode.BadRequest)
-        val order = orderRepository.order(id) ?: return@get call.respondText(
-            "Not Found",
-            status = HttpStatusCode.NotFound
-        )
-        call.respond(order)
+        when(val orderResult = orderRepository.order(id)) {
+            is Result.Failure -> {
+                call.respond(HttpStatusCode.InternalServerError, "Something went wrong when retrieving data about order with id: $id")
+            }
+            is Result.Success -> {
+                val order = orderResult.data ?: return@get call.respondText(
+                    "Not Found",
+                    status = HttpStatusCode.NotFound
+                )
+                call.respond(order)
+            }
+        }
     }
 }
 
@@ -41,11 +68,18 @@ fun Route.totalizeOrderRoute(orderRepository: OrdersRepository) {
         val id = call.parameters["id"]
             ?: return@get call.respondText("Bad Request", status = HttpStatusCode.BadRequest)
 
-        val total = orderRepository.totalAmountForOrder(id)
-        if (total.compareTo(-1.0) == 0) {
-            return@get call.respondText("Not Found", status = HttpStatusCode.NotFound)
+        when(val totalResult = orderRepository.totalAmountForOrder(id)) {
+            is Result.Failure -> {
+                call.respond(HttpStatusCode.InternalServerError, "Something went wrong when retrieving data about order with id: $id")
+            }
+            is Result.Success -> {
+                val total = totalResult.data ?: return@get call.respondText(
+                    "Not Found",
+                    status = HttpStatusCode.NotFound
+                )
+                call.respond(total)
+            }
         }
-        call.respond(total)
     }
 }
 

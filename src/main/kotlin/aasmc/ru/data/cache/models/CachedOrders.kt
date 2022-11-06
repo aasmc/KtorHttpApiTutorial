@@ -38,7 +38,7 @@ data class CachedItem(
     var amount: Int = 0
     @Column(name = "price", nullable = false)
     var price: Double = 0.0
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "ORDER_ID", nullable = false)
     lateinit var order: CachedOrder
 
