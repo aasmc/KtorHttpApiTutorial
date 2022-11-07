@@ -1,6 +1,6 @@
 package aasmc.ru.data.cache.daos.impl
 
-import aasmc.ru.data.cache.HibernateSessionFactory
+import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.daos.interfaces.OrdersDAO
 import aasmc.ru.data.cache.models.CachedOrder
 import aasmc.ru.data.cache.withSession
@@ -8,7 +8,7 @@ import aasmc.ru.domain.model.Result
 import org.hibernate.SessionFactory
 
 class HibernateOrdersDao(
-    private val sessionFactory: SessionFactory = HibernateSessionFactory.sessionFactory
+    private val sessionFactory: SessionFactory = HibernateFactory.sessionFactory
 ) : OrdersDAO {
     override suspend fun hasOrders(): Boolean {
         val result = sessionFactory.withSession {

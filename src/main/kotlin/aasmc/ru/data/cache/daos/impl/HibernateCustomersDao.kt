@@ -1,6 +1,6 @@
 package aasmc.ru.data.cache.daos.impl
 
-import aasmc.ru.data.cache.HibernateSessionFactory
+import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.daos.interfaces.CustomersDAO
 import aasmc.ru.data.cache.models.CachedCustomer
 import aasmc.ru.data.cache.withSession
@@ -9,7 +9,7 @@ import aasmc.ru.domain.model.Result
 import org.hibernate.SessionFactory
 
 class HibernateCustomersDao(
-    private val sessionFactory: SessionFactory = HibernateSessionFactory.sessionFactory
+    private val sessionFactory: SessionFactory = HibernateFactory.sessionFactory
 ) : CustomersDAO {
     override suspend fun allCustomers(): Result<List<CachedCustomer>> {
         val result = sessionFactory.withSession {

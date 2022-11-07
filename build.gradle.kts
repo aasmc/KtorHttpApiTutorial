@@ -52,6 +52,7 @@ dependencies {
 
     implementation("org.hibernate:hibernate-core:$hibernate_version")
     implementation("org.hibernate.orm:hibernate-hikaricp:$hibernate_version")
+    implementation ("com.zaxxer:HikariCP:$hikari_version")
 
     implementation("com.h2database:h2:$h2_version")
 
