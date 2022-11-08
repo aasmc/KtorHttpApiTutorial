@@ -1,4 +1,4 @@
-package aasmc.ru.data.cache
+package aasmc.ru.data.cache.ehcache
 
 import aasmc.ru.data.cache.models.CachedCustomer
 import aasmc.ru.data.cache.models.CachedOrder
