@@ -16,6 +16,8 @@ object HibernateFactory {
 
     private var entityManagerFactory: EntityManagerFactory? = null
 
+    private var testEntityManagerFactory: EntityManagerFactory? = null
+
     private fun createSessionFactory(): SessionFactory {
         val registry = StandardServiceRegistryBuilder()
             .configure()
@@ -30,45 +32,77 @@ object HibernateFactory {
     }
 
     @Synchronized
+    fun createTestEntityManagerFactory(): EntityManagerFactory {
+        if (testEntityManagerFactory == null) {
+            val builder = createEntityManagerFactoryBuilder(
+                forTest = true,
+                config = null
+            )
+            testEntityManagerFactory = builder.build()
+        }
+        return testEntityManagerFactory!!
+    }
+
+    @Synchronized
     fun createEntityManagerFactory(config: ApplicationConfig): EntityManagerFactory {
         if (entityManagerFactory == null) {
-            val persistenceUnitInfo =
-                persistenceUnitInfo(this::class.java.simpleName, config)
-
-            val configuration= properties(config) as MutableMap<String, Any>
-            InterceptorProvider.provideInterceptor()?.let {
-                configuration[AvailableSettings.INTERCEPTOR] = it
-            }
-            IntegratorProvider.provideIntegrator()?.let {
-                configuration["hibernate.integrator_provider"] = ({ listOf(it) } as org.hibernate.jpa.boot.spi.IntegratorProvider)
-            }
-            val entityManagerFactoryBuilder = EntityManagerFactoryBuilderImpl(
-                PersistenceUnitInfoDescriptor(persistenceUnitInfo), configuration
+            val builder = createEntityManagerFactoryBuilder(
+                forTest = false,
+                config = config
             )
-            entityManagerFactory = entityManagerFactoryBuilder.build()
+            entityManagerFactory = builder.build()
         }
         return entityManagerFactory!!
     }
 
-    private fun entities(): Array<Class<*>> {
-        return EntityProvider.provideEntities()
-    }
+    private fun createEntityManagerFactoryBuilder(
+        forTest: Boolean,
+        config: ApplicationConfig?
+    ): EntityManagerFactoryBuilderImpl {
+        val persistenceUnitInfo =
+            persistenceUnitInfo(this::class.java.simpleName, config, forTest)
 
-    private fun entityClassNames(): List<String> =
-        entities().map {
-            it.name
+        val configuration = properties(forTest, config) as MutableMap<String, Any>
+        InterceptorProvider.provideInterceptor()?.let {
+            configuration[AvailableSettings.INTERCEPTOR] = it
         }
-
-    private fun persistenceUnitInfo(name: String, config: ApplicationConfig): PersistenceUnitInfoImpl {
-        return PersistenceUnitInfoImpl(
-            name, entityClassNames(), properties(config)
+        IntegratorProvider.provideIntegrator()?.let {
+            configuration["hibernate.integrator_provider"] =
+                ({ listOf(it) } as org.hibernate.jpa.boot.spi.IntegratorProvider)
+        }
+        return EntityManagerFactoryBuilderImpl(
+            PersistenceUnitInfoDescriptor(persistenceUnitInfo), configuration
         )
     }
 
-    private fun properties(config: ApplicationConfig): Properties {
-        val dataSource = DataSourceProvider.provideDatasource(config)
+    private fun entities(forTest: Boolean): Array<Class<*>> {
+        return EntityProvider.provideEntities(forTest)
+    }
+
+    private fun entityClassNames(forTest: Boolean): List<String> =
+        entities(forTest).map {
+            it.name
+        }
+
+    private fun persistenceUnitInfo(
+        name: String,
+        config: ApplicationConfig?,
+        forTest: Boolean
+    ): PersistenceUnitInfoImpl {
+        return PersistenceUnitInfoImpl(
+            name, entityClassNames(forTest), properties(forTest, config)
+        )
+    }
+
+
+    private fun properties(forTest: Boolean, config: ApplicationConfig?): Properties {
+        val dataSource = DataSourceProvider.provideDataSource(forTest, config)
         val props = Properties()
-        props["hibernate.hbm2ddl.auto"] = "update"
+        if (forTest) {
+            props["hibernate.hbm2ddl.auto"] = "create-drop"
+        } else {
+            props["hibernate.hbm2ddl.auto"] = "update"
+        }
         props["show_sql"] = "true"
         props["hibernate.connection.datasource"] = dataSource
         props["hibernate.generate_statistics"] = "true"

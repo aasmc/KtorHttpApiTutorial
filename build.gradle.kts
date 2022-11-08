@@ -17,11 +17,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
     id("org.jetbrains.kotlin.plugin.jpa") version "1.7.20"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.7.20"
 }
 
 
 allOpen {
-    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
+    annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
+}
+
+noArg {
+    annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
 }
 
 group = "aasmc.ru"
@@ -53,6 +58,7 @@ dependencies {
     implementation("org.hibernate:hibernate-core:$hibernate_version")
     implementation("org.hibernate.orm:hibernate-hikaricp:$hibernate_version")
     implementation ("com.zaxxer:HikariCP:$hikari_version")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
     implementation("com.h2database:h2:$h2_version")
 

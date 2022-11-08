@@ -12,7 +12,22 @@ object DataSourceProvider {
         return "org.hibernate.dialect.H2Dialect"
     }
 
-    fun provideDatasource(config: ApplicationConfig): DataSource {
+    fun provideDataSource(forTest: Boolean, config: ApplicationConfig? = null): DataSource {
+        return if (forTest) {
+            provideTestDatasource()
+        } else {
+            checkNotNull(config)
+            provideDatasource(config)
+        }
+    }
+
+    private fun provideTestDatasource(): DataSource {
+        val driverName = "org.h2.Driver"
+        val jdbcUrl = "jdbc:h2:mem:test_mem"
+        return createHikariDataSource(jdbcUrl, driverName)
+    }
+
+    private fun provideDatasource(config: ApplicationConfig): DataSource {
         val driverName = config.property("storage.driverClassName").getString()
         val jdbcUrl = config.property("storage.jdbcURL").getString() +
                 (config.propertyOrNull("storage.dbFilePath")?.getString()?.let {

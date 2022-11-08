@@ -6,12 +6,24 @@ import aasmc.ru.data.cache.models.CachedOrder
 import aasmc.ru.data.cache.models.CachedUser
 
 object EntityProvider {
-    fun provideEntities(): Array<Class<*>> {
+    fun provideEntities(forTest: Boolean): Array<Class<*>> {
+        return if (forTest) {
+            testEntities()
+        } else {
+            appEntities()
+        }
+    }
+
+    private fun appEntities(): Array<Class<*>> {
         return arrayOf(
             CachedCustomer::class.java,
             CachedOrder::class.java,
             CachedItem::class.java,
             CachedUser::class.java
         )
+    }
+
+    private fun testEntities(): Array<Class<*>> {
+        return emptyArray()
     }
 }
