@@ -1,14 +1,18 @@
 package aasmc.ru.data.repositoriesimpl
 
-import aasmc.ru.data.cache.daos.impl.HibernateSecurityDao
+import aasmc.ru.data.cache.daos.impl.jpa.JpaSecurityDao
+import aasmc.ru.data.cache.daos.impl.nativehibernate.HibernateSecurityDao
 import aasmc.ru.data.cache.daos.interfaces.SecurityDAO
+import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.models.mappers.UsersMapper
 import aasmc.ru.domain.model.Result
 import aasmc.ru.domain.model.User
 import aasmc.ru.domain.repositories.SecurityRepository
+import io.ktor.server.config.*
 
 class SecurityRepositoryImpl(
-    private val securityDAO: SecurityDAO = HibernateSecurityDao(),
+    private val config: ApplicationConfig,
+    private val securityDAO: SecurityDAO = JpaSecurityDao(HibernateFactory.createEntityManagerFactory(config)),
     private val usersMapper: UsersMapper = UsersMapper()
 ) : SecurityRepository {
 

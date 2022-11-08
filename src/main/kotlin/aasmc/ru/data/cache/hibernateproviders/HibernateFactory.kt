@@ -14,6 +14,8 @@ object HibernateFactory {
 
     val sessionFactory: SessionFactory by lazy { createSessionFactory() }
 
+    private var entityManagerFactory: EntityManagerFactory? = null
+
     private fun createSessionFactory(): SessionFactory {
         val registry = StandardServiceRegistryBuilder()
             .configure()
@@ -27,21 +29,25 @@ object HibernateFactory {
         return factory
     }
 
+    @Synchronized
     fun createEntityManagerFactory(config: ApplicationConfig): EntityManagerFactory {
-        val persistenceUnitInfo =
-            persistenceUnitInfo(this::class.java.simpleName, config)
+        if (entityManagerFactory == null) {
+            val persistenceUnitInfo =
+                persistenceUnitInfo(this::class.java.simpleName, config)
 
-        val configuration= properties(config) as MutableMap<String, Any>
-        InterceptorProvider.provideInterceptor()?.let {
-            configuration[AvailableSettings.INTERCEPTOR] = it
+            val configuration= properties(config) as MutableMap<String, Any>
+            InterceptorProvider.provideInterceptor()?.let {
+                configuration[AvailableSettings.INTERCEPTOR] = it
+            }
+            IntegratorProvider.provideIntegrator()?.let {
+                configuration["hibernate.integrator_provider"] = ({ listOf(it) } as org.hibernate.jpa.boot.spi.IntegratorProvider)
+            }
+            val entityManagerFactoryBuilder = EntityManagerFactoryBuilderImpl(
+                PersistenceUnitInfoDescriptor(persistenceUnitInfo), configuration
+            )
+            entityManagerFactory = entityManagerFactoryBuilder.build()
         }
-        IntegratorProvider.provideIntegrator()?.let {
-            configuration["hibernate.integrator_provider"] = ({ listOf(it) } as org.hibernate.jpa.boot.spi.IntegratorProvider)
-        }
-        val entityManagerFactoryBuilder = EntityManagerFactoryBuilderImpl(
-            PersistenceUnitInfoDescriptor(persistenceUnitInfo), configuration
-        )
-        return entityManagerFactoryBuilder.build()
+        return entityManagerFactory!!
     }
 
     private fun entities(): Array<Class<*>> {

@@ -1,16 +1,20 @@
 package aasmc.ru.data.repositoriesimpl
 
-import aasmc.ru.data.cache.daos.impl.HibernateOrdersDao
+import aasmc.ru.data.cache.daos.impl.jpa.JpaOrdersDao
+import aasmc.ru.data.cache.daos.impl.nativehibernate.HibernateOrdersDao
 import aasmc.ru.data.cache.daos.interfaces.OrdersDAO
+import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.models.mappers.OrdersMapper
 import aasmc.ru.domain.model.Order
 import aasmc.ru.domain.model.OrderItem
 import aasmc.ru.domain.model.Result
 import aasmc.ru.domain.repositories.OrdersRepository
+import io.ktor.server.config.*
 import kotlinx.coroutines.runBlocking
 
 class OrdersRepositoryImpl(
-    private val ordersDAO: OrdersDAO = HibernateOrdersDao(),
+    private val config: ApplicationConfig,
+    private val ordersDAO: OrdersDAO = JpaOrdersDao(HibernateFactory.createEntityManagerFactory(config)),
     private val ordersMapper: OrdersMapper = OrdersMapper()
 ) : OrdersRepository {
     init {

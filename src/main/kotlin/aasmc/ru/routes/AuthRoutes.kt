@@ -26,8 +26,8 @@ fun Route.signUp(
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }
-
-        when (val result = securityRepository.userAlreadyExists(request.username)) {
+        val existsResult = securityRepository.userAlreadyExists(request.username)
+        when (existsResult) {
             is Result.Failure -> {
                 call.respond(
                     HttpStatusCode.InternalServerError,
@@ -35,7 +35,7 @@ fun Route.signUp(
                 )
             }
             is Result.Success -> {
-                val exists = result.data
+                val exists = existsResult.data
                 if (exists) {
                     call.respond(HttpStatusCode.Conflict, "User with the same username already exists in the database.")
                     return@post
@@ -57,7 +57,9 @@ fun Route.signUp(
             salt = saltedHash.salt
         )
 
-        when (securityRepository.insertUser(user)) {
+        val userResult = securityRepository.insertUser(user)
+
+        when (userResult) {
             is Result.Failure -> {
                 call.respond(HttpStatusCode.Conflict)
                 return@post

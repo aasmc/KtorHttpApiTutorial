@@ -1,4 +1,4 @@
-package aasmc.ru.data.cache.daos.impl
+package aasmc.ru.data.cache.daos.impl.nativehibernate
 
 import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.daos.interfaces.CustomersDAO

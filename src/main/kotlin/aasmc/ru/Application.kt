@@ -31,10 +31,10 @@ fun Application.module() {
     configureSerialization()
     configureSecurity(config = tokenConfig)
     configureRouting(
-        customersRepository = CustomerRepositoryImpl(),
-        ordersRepository = OrdersRepositoryImpl(),
+        customersRepository = CustomerRepositoryImpl(config = environment.config),
+        ordersRepository = OrdersRepositoryImpl(config = environment.config),
         hashingService = hashingService,
-        securityRepository = SecurityRepositoryImpl(),
+        securityRepository = SecurityRepositoryImpl(config = environment.config),
         tokenService = tokenService,
         tokenConfig = tokenConfig
     )

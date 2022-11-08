@@ -1,14 +1,18 @@
 package aasmc.ru.data.repositoriesimpl
 
-import aasmc.ru.data.cache.daos.impl.HibernateCustomersDao
+import aasmc.ru.data.cache.daos.impl.jpa.JpaCustomerDao
+import aasmc.ru.data.cache.daos.impl.nativehibernate.HibernateCustomersDao
 import aasmc.ru.data.cache.daos.interfaces.CustomersDAO
+import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
 import aasmc.ru.data.cache.models.mappers.CustomerMapper
 import aasmc.ru.domain.model.Customer
 import aasmc.ru.domain.model.Result
 import aasmc.ru.domain.repositories.CustomersRepository
+import io.ktor.server.config.*
 
 class CustomerRepositoryImpl(
-    private val customersDAO: CustomersDAO = HibernateCustomersDao(),
+    private val config: ApplicationConfig,
+    private val customersDAO: CustomersDAO = JpaCustomerDao(HibernateFactory.createEntityManagerFactory(config)),
     private val customersMapper: CustomerMapper = CustomerMapper()
 ) : CustomersRepository {
 

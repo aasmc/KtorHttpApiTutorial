@@ -14,7 +14,7 @@ object DataSourceProvider {
 
     fun provideDatasource(config: ApplicationConfig): DataSource {
         val driverName = config.property("storage.driverClassName").getString()
-        val jdbcUrl = config.property("storage.jdbcUrl").getString() +
+        val jdbcUrl = config.property("storage.jdbcURL").getString() +
                 (config.propertyOrNull("storage.dbFilePath")?.getString()?.let {
                     File(it).canonicalFile.absolutePath
                 } ?: "")
