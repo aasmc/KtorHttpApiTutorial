@@ -1,7 +1,6 @@
 package aasmc.ru.playground.simple
 
 import jakarta.validation.Validation
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -10,10 +9,7 @@ internal class ItemTest {
 
     @Test
     fun validateItem() {
-        val factory = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(ParameterMessageInterpolator())
-            .buildValidatorFactory()
+        val factory = Validation.buildDefaultValidatorFactory()
         val validator = factory.validator
         val item = Item()
         item.name = "Some Name"

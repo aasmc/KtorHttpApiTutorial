@@ -62,16 +62,14 @@ dependencies {
 
     // validation
     implementation("org.hibernate.validator:hibernate-validator:$hibernate_validator_veraion")
-    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
-
+    // need this to use Jakarta validation
+    implementation("org.glassfish.expressly:expressly:5.0.0")
 
     implementation("com.h2database:h2:$h2_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-    testImplementation("jakarta.el:jakarta.el-api:5.0.1")
-
 }
 
 tasks.test {
