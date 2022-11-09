@@ -11,7 +11,7 @@ data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    var id: Long = 0L
+    private var id: Long = 0L
 ) {
 
     constructor(
@@ -80,5 +80,7 @@ data class User(
         // stub method
         return BigDecimal.TEN
     }
+
+    fun getId() = id
 
 }

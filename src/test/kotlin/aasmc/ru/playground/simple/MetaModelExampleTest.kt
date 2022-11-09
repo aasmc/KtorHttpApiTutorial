@@ -1,16 +1,33 @@
 package aasmc.ru.playground.simple
 
 import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
+import jakarta.persistence.EntityManagerFactory
+import jakarta.persistence.metamodel.Attribute
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import jakarta.persistence.metamodel.*
 import java.util.*
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 class MetaModelExampleTest {
+
+    private lateinit var entityManagerFactory: EntityManagerFactory
+
+    @BeforeEach
+    fun setup() {
+        entityManagerFactory = HibernateFactory.createTestEntityManagerFactory()
+    }
+
+    @AfterEach
+    fun tearDown() {
+        if (this::entityManagerFactory.isInitialized) {
+            entityManagerFactory.close()
+        }
+    }
+
     @Test
     fun metaModelExample() {
-        val entityManagerFactory = HibernateFactory.createTestEntityManagerFactory()
         val metaModel = entityManagerFactory.metamodel
         val managedTypes = metaModel.managedTypes
         // there are 4 entities: Bid, Item, Category and User
@@ -49,6 +66,7 @@ class MetaModelExampleTest {
             auctionEndAttribute.isAssociation
         )
     }
+
 }
 
 

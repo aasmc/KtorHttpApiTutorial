@@ -9,7 +9,7 @@ data class Bid(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    var id: Long = 0
+    private var id: Long = 0
 ) {
     @NotNull
     @Column(name = "amount", nullable = false)
@@ -22,6 +22,8 @@ data class Bid(
     @JoinColumn(name = "ITEM_ID")
     var item: Item? = null
         internal set
+
+    fun getId(): Long = id
 
     constructor(amount: BigDecimal, item: Item) : this() {
         this.item = item

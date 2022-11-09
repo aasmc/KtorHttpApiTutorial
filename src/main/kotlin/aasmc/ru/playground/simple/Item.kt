@@ -12,7 +12,7 @@ data class Item(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    var id: Long = 0
+    private var id: Long = 0
 ) {
     @Version
     var version: Long = 0
@@ -70,4 +70,6 @@ data class Item(
         }
         return null
     }
+
+    fun getId() = id
 }
