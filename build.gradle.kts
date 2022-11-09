@@ -8,6 +8,7 @@ val ehcache_version: String by project
 val commons_codec_version: String by project
 val hibernate_version: String by project
 val javax_persistence_version: String by project
+val hibernate_validator_veraion: String by project
 
 
 plugins {
@@ -58,10 +59,21 @@ dependencies {
     implementation("org.hibernate:hibernate-core:$hibernate_version")
     implementation("org.hibernate.orm:hibernate-hikaricp:$hibernate_version")
     implementation ("com.zaxxer:HikariCP:$hikari_version")
+
+    // validation
+    implementation("org.hibernate.validator:hibernate-validator:$hibernate_validator_veraion")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
 
     implementation("com.h2database:h2:$h2_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    testImplementation("jakarta.el:jakarta.el-api:5.0.1")
+
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

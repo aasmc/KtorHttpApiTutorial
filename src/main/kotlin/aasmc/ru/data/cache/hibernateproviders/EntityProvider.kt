@@ -4,6 +4,10 @@ import aasmc.ru.data.cache.models.CachedCustomer
 import aasmc.ru.data.cache.models.CachedItem
 import aasmc.ru.data.cache.models.CachedOrder
 import aasmc.ru.data.cache.models.CachedUser
+import aasmc.ru.playground.simple.Bid
+import aasmc.ru.playground.simple.Category
+import aasmc.ru.playground.simple.Item
+import aasmc.ru.playground.simple.User
 
 object EntityProvider {
     fun provideEntities(forTest: Boolean): Array<Class<*>> {
@@ -24,6 +28,11 @@ object EntityProvider {
     }
 
     private fun testEntities(): Array<Class<*>> {
-        return emptyArray()
+        return arrayOf(
+            Item::class.java,
+            Bid::class.java,
+            Category::class.java,
+            User::class.java
+        )
     }
 }
