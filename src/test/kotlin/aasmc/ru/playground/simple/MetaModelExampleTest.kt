@@ -1,6 +1,7 @@
 package aasmc.ru.playground.simple
 
-import aasmc.ru.data.cache.hibernateproviders.HibernateFactory
+import aasmc.ru.cache.hibernateproviders.TestDatabaseFactory
+import aasmc.ru.data.cache.hibernateproviders.interfaces.DatabaseFactory
 import jakarta.persistence.EntityManagerFactory
 import jakarta.persistence.metamodel.Attribute
 import org.junit.jupiter.api.AfterEach
@@ -13,10 +14,11 @@ import kotlin.test.assertFalse
 class MetaModelExampleTest {
 
     private lateinit var entityManagerFactory: EntityManagerFactory
+    private val dbFactory: DatabaseFactory = TestDatabaseFactory()
 
     @BeforeEach
     fun setup() {
-        entityManagerFactory = HibernateFactory.createTestEntityManagerFactory()
+        entityManagerFactory = dbFactory.createEntityManagerFactory()
     }
 
     @AfterEach

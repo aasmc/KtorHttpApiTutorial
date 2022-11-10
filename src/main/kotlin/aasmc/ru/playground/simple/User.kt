@@ -9,7 +9,7 @@ import java.math.BigDecimal
 @Serializable
 data class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, updatable = false)
     private var id: Long = 0L
 ) {

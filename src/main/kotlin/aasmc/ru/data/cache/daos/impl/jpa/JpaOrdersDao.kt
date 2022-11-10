@@ -16,7 +16,7 @@ class JpaOrdersDao(
             result != null && result.isNotEmpty()
         }
         return when (result) {
-            is Result.Success -> true
+            is Result.Success -> result.data
             is Result.Failure -> false
         }
     }

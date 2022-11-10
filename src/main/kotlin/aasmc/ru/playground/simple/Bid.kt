@@ -7,7 +7,15 @@ import java.math.BigDecimal
 @Entity
 data class Bid(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "bid_sequence_generator"
+    )
+    @SequenceGenerator(
+        name = "bid_sequence_generator",
+        sequenceName = "bid_seq",
+        allocationSize = 20,
+    )
     @Column(name = "id", updatable = false, nullable = false)
     private var id: Long = 0
 ) {

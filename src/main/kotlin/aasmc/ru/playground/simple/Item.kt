@@ -4,13 +4,28 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Parameter
 import java.math.BigDecimal
 import java.util.*
 
 @Entity
 data class Item(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "item_sequence_generator"
+    )
+    @GenericGenerator(
+        name = "item_sequence_generator",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = [
+            Parameter(name = "sequence_name", value = "item_seq"),
+            Parameter(name = "initial_value", value = "1"),
+            Parameter(name = "increment_size", value = "3"),
+            Parameter(name = "optimizer", value = "pooled-lo")
+        ]
+    )
     @Column(name = "id", nullable = false, updatable = false)
     private var id: Long = 0
 ) {

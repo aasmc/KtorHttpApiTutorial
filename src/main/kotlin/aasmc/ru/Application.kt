@@ -1,5 +1,7 @@
 package aasmc.ru
 
+import aasmc.ru.data.cache.hibernateproviders.impl.AppDatabaseFactory
+import aasmc.ru.data.cache.hibernateproviders.interfaces.DatabaseFactory
 import aasmc.ru.data.repositoriesimpl.CustomerRepositoryImpl
 import aasmc.ru.data.repositoriesimpl.OrdersRepositoryImpl
 import aasmc.ru.data.repositoriesimpl.SecurityRepositoryImpl
@@ -27,14 +29,17 @@ fun Application.module() {
     val hashingService = SHA256HashingService()
     val tokenService = JwtTokenService()
 
+    val databaseFactory: DatabaseFactory = AppDatabaseFactory(config = environment.config)
+    val emFactory = databaseFactory.createEntityManagerFactory()
+
     configureMonitoring()
     configureSerialization()
     configureSecurity(config = tokenConfig)
     configureRouting(
-        customersRepository = CustomerRepositoryImpl(config = environment.config),
-        ordersRepository = OrdersRepositoryImpl(config = environment.config),
+        customersRepository = CustomerRepositoryImpl(emFactory),
+        ordersRepository = OrdersRepositoryImpl(emFactory),
         hashingService = hashingService,
-        securityRepository = SecurityRepositoryImpl(config = environment.config),
+        securityRepository = SecurityRepositoryImpl(emFactory),
         tokenService = tokenService,
         tokenConfig = tokenConfig
     )
