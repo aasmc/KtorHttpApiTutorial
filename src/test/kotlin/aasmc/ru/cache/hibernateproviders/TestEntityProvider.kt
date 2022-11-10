@@ -1,7 +1,7 @@
 package aasmc.ru.cache.hibernateproviders
 
 import aasmc.ru.data.cache.hibernateproviders.interfaces.EntityProvider
-import aasmc.ru.playground.simple.*
+import aasmc.ru.playground.model.*
 
 class TestEntityProvider: EntityProvider {
     override fun provideEntities(): Array<Class<*>> {

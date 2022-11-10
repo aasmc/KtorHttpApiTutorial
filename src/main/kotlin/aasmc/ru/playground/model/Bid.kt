@@ -1,10 +1,11 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import java.math.BigDecimal
 
 @Entity
+@org.hibernate.annotations.Immutable
 data class Bid(
     @Id
     @GeneratedValue(
@@ -28,7 +29,7 @@ data class Bid(
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ITEM_ID")
-    var item: Item? = null
+    var item: Item = Item()
 
     fun getId(): Long = id
 

@@ -1,4 +1,4 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.Future
@@ -6,17 +6,10 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import org.hibernate.type.EnumType
-import org.hibernate.type.Type
-import org.hibernate.type.YesNoConverter
-import org.hibernate.type.internal.BasicTypeImpl
-import org.hibernate.usertype.UserType
 import java.math.BigDecimal
 import java.sql.Blob
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
-import java.util.*
 
 @Entity
 data class Item(
@@ -41,22 +34,35 @@ data class Item(
     @Version
     private var version: Long = 0
 
+    // JPA says @Temporal is required but Hibernate will default to TIMESTAMP without it
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
+    // in-VM INSERT strategy, Hibernate wil use the current timestamp of the JVM
+    // as the insert value for the attribute
     @org.hibernate.annotations.CreationTimestamp
     var createdOn: Instant = Instant.now()
 
     @NotNull
-    @Basic(fetch = FetchType.LAZY) // defaults to EAGER
+    @Basic(fetch = FetchType.LAZY, optional = false) // defaults to EAGER
     var description: String = ""
 
     @Basic(fetch = FetchType.LAZY)
-    @Column(length = 131072) // 128 kilobytes maximum for the picture
-    var image: ByteArray = ByteArray(0)
+    @Column(length = 131072, nullable = true) // 128 kilobytes maximum for the picture
+    var image: ByteArray? = null
 
     @Lob
     var imageBlog: Blob? = null
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    var auctionType: AuctionType = AuctionType.HIGHEST_BID
+
+    // Values of derived properties are calculated at runtime by evaluating
+    // an SQL expression declared with this annotation. I.e.
+    // these formulas are evaluated every time the Item entity is retrieved
+    // from the DB, and not at any other time, so the result may be outdated
+    // if other properties are modified. These properties never appear in
+    // SQL INSERTs or UPDATEs.
     @org.hibernate.annotations.Formula(
         "substr(DESCRIPTION, 1, 12) || '...'"
     )
@@ -67,6 +73,9 @@ data class Item(
     )
     var averageAmount: BigDecimal = BigDecimal.ZERO
 
+    // values in the DB are stored in imperial system
+    // while the domain model has metric system, so we can use a
+    // Hibernate transformer:
     @Column(name = "IMPERIALWEIGHT")
     @org.hibernate.annotations.ColumnTransformer(
         read = "IMPERIALWEIGHT / 2.20462",
@@ -76,6 +85,7 @@ data class Item(
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(insertable = false, updatable = false)
+    // in-DB strategy of inserting a generated value
     @org.hibernate.annotations.Generated(
         org.hibernate.annotations.GenerationTime.ALWAYS
     )
@@ -100,7 +110,7 @@ data class Item(
     @Future
     var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
 
-    @Column(name = "buy_now_price")
+    @Column(name = "buy_now_price", nullable = false)
     var buyNowPrice: BigDecimal = BigDecimal.ZERO
 
     @Transient

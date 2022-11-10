@@ -1,22 +1,20 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.validation.constraints.NotNull
-import kotlinx.serialization.Serializable
 
 @Embeddable
-@Serializable
-class Address(
-    @NotNull
-    @Column(nullable = false)
-    var street: String = "",
-
+class City(
     @NotNull
     @Column(nullable = false, length = 5)
     var zipcode: String = "",
 
     @NotNull
     @Column(nullable = false)
-    var city: String = ""
+    var name: String = "",
+
+    @NotNull
+    @Column(nullable = false)
+    var country: String = ""
 )

@@ -1,4 +1,4 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id

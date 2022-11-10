@@ -1,4 +1,4 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.*
 
@@ -14,7 +14,7 @@ data class Category(
         this.name = name
     }
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     var name: String = ""
 
     fun getId() = id

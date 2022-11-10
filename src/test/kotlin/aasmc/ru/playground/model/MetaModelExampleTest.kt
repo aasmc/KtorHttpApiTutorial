@@ -1,9 +1,9 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import aasmc.ru.playground.AbstractTest
 import jakarta.persistence.metamodel.Attribute
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
@@ -14,8 +14,8 @@ class MetaModelExampleTest : AbstractTest (){
         val metaModel = entityManagerFactory.metamodel
         val managedTypes = metaModel.managedTypes
         // there are 4 entities: Bid, Item, Category, User
-        // and 1 @Embeddable type Address
-        assertEquals(5, managedTypes.size)
+        // and 2 @Embeddable type Address and City
+        assertEquals(6, managedTypes.size)
 
         val list = managedTypes.toList()
         val itemType = list.filter { it.javaType == Item::class.java }
@@ -39,7 +39,7 @@ class MetaModelExampleTest : AbstractTest (){
             itemType.getSingularAttribute("auctionEnd")
         assertEquals(
             auctionEndAttribute.javaType,
-            Date::class.java
+            Instant::class.java
         )
 
         assertFalse(

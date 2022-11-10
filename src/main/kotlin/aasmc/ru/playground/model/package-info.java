@@ -12,4 +12,4 @@
         )
 })
 
-package aasmc.ru.playground.simple;
+package aasmc.ru.playground.model;

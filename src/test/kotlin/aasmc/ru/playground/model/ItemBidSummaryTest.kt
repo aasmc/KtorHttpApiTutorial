@@ -1,4 +1,4 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import aasmc.ru.data.cache.withEntityManager
 import aasmc.ru.domain.model.Result

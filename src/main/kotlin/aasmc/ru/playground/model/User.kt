@@ -1,4 +1,4 @@
-package aasmc.ru.playground.simple
+package aasmc.ru.playground.model
 
 import jakarta.persistence.*
 import kotlinx.serialization.Serializable
@@ -6,7 +6,6 @@ import java.math.BigDecimal
 
 @Entity
 @Table(name = "USERS")
-@Serializable
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -49,7 +48,6 @@ data class User(
         // compares them by object identity.
         get() = Address(
             street = field.street,
-            zipcode = field.zipcode,
             city = field.city
         )
 
@@ -62,19 +60,22 @@ data class User(
                 column = Column(name = "BILLING_STREET")
             ),
             AttributeOverride(
-                name = "zipcode",
+                name = "city.zipcode",
                 column = Column(name = "BILLING_ZIPCODE", length = 5)
             ),
             AttributeOverride(
-                name = "city",
-                column = Column(name = "BILLING_CITY")
+                name = "city.name",
+                column = Column(name = "BILLING_CITY_NAME")
+            ),
+            AttributeOverride(
+                name = "city.country",
+                column = Column(name = "BILLING_CITY_COUNTRY")
             )
         ]
     )
     var billingAddress: Address? = null
         get() = if (field == null) null else Address(
             street = field!!.street,
-            zipcode = field!!.zipcode,
             city = field!!.city
         )
 
