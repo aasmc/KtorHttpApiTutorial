@@ -1,38 +1,19 @@
 package aasmc.ru.playground.simple
 
-import aasmc.ru.cache.hibernateproviders.TestDatabaseFactory
-import aasmc.ru.data.cache.hibernateproviders.interfaces.DatabaseFactory
-import jakarta.persistence.EntityManagerFactory
+import aasmc.ru.playground.AbstractTest
 import jakarta.persistence.metamodel.Attribute
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-class MetaModelExampleTest {
-
-    private lateinit var entityManagerFactory: EntityManagerFactory
-    private val dbFactory: DatabaseFactory = TestDatabaseFactory()
-
-    @BeforeEach
-    fun setup() {
-        entityManagerFactory = dbFactory.createEntityManagerFactory()
-    }
-
-    @AfterEach
-    fun tearDown() {
-        if (this::entityManagerFactory.isInitialized) {
-            entityManagerFactory.close()
-        }
-    }
+class MetaModelExampleTest : AbstractTest (){
 
     @Test
     fun metaModelExample() {
         val metaModel = entityManagerFactory.metamodel
         val managedTypes = metaModel.managedTypes
-        // there are 4 entities: Bid, Item, Category and User
+        // there are 4 entities: Bid, Item, Category, User
         // and 1 @Embeddable type Address
         assertEquals(5, managedTypes.size)
 

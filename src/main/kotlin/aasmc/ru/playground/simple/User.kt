@@ -14,6 +14,7 @@ data class User(
     private var id: Long = 0L
 ) {
 
+    @JvmOverloads
     constructor(
         id: Long,
         username: String,
@@ -25,6 +26,7 @@ data class User(
         this.billingAddress = billingAddress
     }
 
+    @JvmOverloads
     constructor(
         username: String,
         homeAddress: Address,

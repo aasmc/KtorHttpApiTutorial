@@ -6,7 +6,16 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
+import org.hibernate.type.EnumType
+import org.hibernate.type.Type
+import org.hibernate.type.YesNoConverter
+import org.hibernate.type.internal.BasicTypeImpl
+import org.hibernate.usertype.UserType
 import java.math.BigDecimal
+import java.sql.Blob
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 import java.util.*
 
 @Entity
@@ -30,7 +39,54 @@ data class Item(
     private var id: Long = 0
 ) {
     @Version
-    var version: Long = 0
+    private var version: Long = 0
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    var createdOn: Instant = Instant.now()
+
+    @NotNull
+    @Basic(fetch = FetchType.LAZY) // defaults to EAGER
+    var description: String = ""
+
+    @Basic(fetch = FetchType.LAZY)
+    @Column(length = 131072) // 128 kilobytes maximum for the picture
+    var image: ByteArray = ByteArray(0)
+
+    @Lob
+    var imageBlog: Blob? = null
+
+    @org.hibernate.annotations.Formula(
+        "substr(DESCRIPTION, 1, 12) || '...'"
+    )
+    var shortDescription: String = ""
+
+    @org.hibernate.annotations.Formula(
+        "(select avg(b.AMOUNT) from BID b where b.ITEM_ID = ID)"
+    )
+    var averageAmount: BigDecimal = BigDecimal.ZERO
+
+    @Column(name = "IMPERIALWEIGHT")
+    @org.hibernate.annotations.ColumnTransformer(
+        read = "IMPERIALWEIGHT / 2.20462",
+        write = "? * 2.20462"
+    )
+    var metricWeight: Double = 0.0
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(insertable = false, updatable = false)
+    @org.hibernate.annotations.Generated(
+        org.hibernate.annotations.GenerationTime.ALWAYS
+    )
+    var lastModifier: Instant = Instant.now()
+
+    @Column(insertable = false)
+    @org.hibernate.annotations.ColumnDefault("1.00")
+    @org.hibernate.annotations.Generated(
+        org.hibernate.annotations.GenerationTime.INSERT
+    )
+    var initialPrice: BigDecimal = BigDecimal.ZERO
 
     @NotNull
     @Size(
@@ -38,11 +94,11 @@ data class Item(
         max = 255,
         message = "Name is required, maximum 255 characters."
     )
-    @Column(name = "name", nullable = false)
+    @Column(name = "item_name", nullable = false)
     var name: String = ""
 
     @Future
-    var auctionEnd: Date = Date()
+    var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
 
     @Column(name = "buy_now_price")
     var buyNowPrice: BigDecimal = BigDecimal.ZERO
@@ -55,13 +111,14 @@ data class Item(
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    var category: Category = Category()
+    var category: Category? = null
 
+    @JvmOverloads
     constructor(
         name: String,
-        auctionEnd: Date = Date(),
+        auctionEnd: Instant,
         buyNowPrice: BigDecimal = BigDecimal.ZERO,
-        category: Category = Category()
+        category: Category? = null
     ) : this() {
         this.name = name
         this.category = category

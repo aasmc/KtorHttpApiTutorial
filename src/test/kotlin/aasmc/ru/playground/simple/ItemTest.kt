@@ -3,6 +3,7 @@ package aasmc.ru.playground.simple
 import jakarta.validation.Validation
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.time.Instant
 import java.util.*
 
 internal class ItemTest {
@@ -13,7 +14,7 @@ internal class ItemTest {
         val validator = factory.validator
         val item = Item()
         item.name = "Some Name"
-        item.auctionEnd = Date()
+        item.auctionEnd = Instant.now()
 
         val violations = validator.validate(item)
         // We have one validation error, auction end date was not in the future!

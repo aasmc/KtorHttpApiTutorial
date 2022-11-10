@@ -29,7 +29,6 @@ data class Bid(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ITEM_ID")
     var item: Item? = null
-        internal set
 
     fun getId(): Long = id
 

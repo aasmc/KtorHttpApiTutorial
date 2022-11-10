@@ -9,9 +9,6 @@ data class Category(
     @Column(name = "id", nullable = false, updatable = false)
     private var id: Long = 0
 ) {
-    constructor(id: Long, name: String) : this(id) {
-        this.name = name
-    }
 
     constructor(name: String) : this() {
         this.name = name
