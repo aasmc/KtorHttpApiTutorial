@@ -65,6 +65,8 @@ dependencies {
     // need this to use Jakarta validation
     implementation("org.glassfish.expressly:expressly:5.0.0")
 
+    // Utils
+    implementation("org.apache.commons:commons-lang3:3.0")
 
     implementation("com.h2database:h2:$h2_version")
 

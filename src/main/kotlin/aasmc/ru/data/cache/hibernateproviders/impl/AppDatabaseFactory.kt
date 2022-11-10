@@ -98,6 +98,7 @@ class AppDatabaseFactory(
         props["show_sql"] = "true"
         props["hibernate.connection.datasource"] = dataSource
         props["hibernate.generate_statistics"] = "true"
+        props["hibernate.auto_quote_keyword"] = "true"
         props["dialect"] = dataSourceProvider.provideDialect()
         return props
     }
