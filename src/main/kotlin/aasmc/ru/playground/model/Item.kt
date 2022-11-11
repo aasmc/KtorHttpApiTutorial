@@ -11,8 +11,21 @@ import java.sql.Blob
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
+/**
+ * In this entity I use ID as the main field for equals method,
+ * and always return the same value from hashCode(), because
+ * I have no valid business key in the entity, that is unique and
+ * immutable during the entire lifecycle of the entity.
+ *
+ * According to Vlad Mihalcea article:
+ * https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+ * It is possible to use this scenario, since we should never fetch
+ * thousands of entities in a @OneToMany Set because the performance
+ * penalty on the database side is multiple orders of magnitude higher
+ * than using a single hashed bucket.
+ */
 @Entity
-data class Item(
+class Item(
     @Id
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
@@ -29,10 +42,54 @@ data class Item(
         ]
     )
     @Column(name = "id", nullable = false, updatable = false)
-    private var id: Long = 0
+    private var id: Long? = null,
+
+    @NotNull
+    @Basic(fetch = FetchType.LAZY, optional = false) // defaults to EAGER
+    var description: String = "",
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    var auctionType: AuctionType = AuctionType.HIGHEST_BID,
+
+    @Column(insertable = false)
+    @org.hibernate.annotations.ColumnDefault("1.00")
+    @org.hibernate.annotations.Generated(
+        org.hibernate.annotations.GenerationTime.INSERT
+    )
+    var initialPrice: BigDecimal = BigDecimal.ZERO,
+
+    @NotNull
+    @Size(
+        min = 2,
+        max = 255,
+        message = "Name is required, maximum 255 characters."
+    )
+    @Column(name = "item_name", nullable = false)
+    var name: String = "",
+
+    @Column(name = "buy_now_price", nullable = false)
+    var buyNowPrice: BigDecimal = BigDecimal.ZERO,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    var category: Category? = null,
 ) {
-    @Version
-    private var version: Long = 0
+
+    @Basic(fetch = FetchType.LAZY)
+    @Column(length = 131072, nullable = true) // 128 kilobytes maximum for the picture
+    var image: ByteArray? = null
+
+    @Lob
+    var imageBlog: Blob? = null
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(insertable = false, updatable = false)
+    // in-DB strategy of inserting a generated value
+    @org.hibernate.annotations.Generated(
+        org.hibernate.annotations.GenerationTime.ALWAYS
+    )
+    var lastModified: Instant = Instant.now()
+
 
     // JPA says @Temporal is required but Hibernate will default to TIMESTAMP without it
     @Temporal(TemporalType.TIMESTAMP)
@@ -42,20 +99,14 @@ data class Item(
     @org.hibernate.annotations.CreationTimestamp
     var createdOn: Instant = Instant.now()
 
-    @NotNull
-    @Basic(fetch = FetchType.LAZY, optional = false) // defaults to EAGER
-    var description: String = ""
+    @Version
+    private var version: Long = 0
 
-    @Basic(fetch = FetchType.LAZY)
-    @Column(length = 131072, nullable = true) // 128 kilobytes maximum for the picture
-    var image: ByteArray? = null
+    @Future
+    var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
 
-    @Lob
-    var imageBlog: Blob? = null
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    var auctionType: AuctionType = AuctionType.HIGHEST_BID
+    @Transient
+    private var bids: MutableSet<Bid> = hashSetOf()
 
     // Values of derived properties are calculated at runtime by evaluating
     // an SQL expression declared with this annotation. I.e.
@@ -83,57 +134,8 @@ data class Item(
     )
     var metricWeight: Double = 0.0
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(insertable = false, updatable = false)
-    // in-DB strategy of inserting a generated value
-    @org.hibernate.annotations.Generated(
-        org.hibernate.annotations.GenerationTime.ALWAYS
-    )
-    var lastModifier: Instant = Instant.now()
-
-    @Column(insertable = false)
-    @org.hibernate.annotations.ColumnDefault("1.00")
-    @org.hibernate.annotations.Generated(
-        org.hibernate.annotations.GenerationTime.INSERT
-    )
-    var initialPrice: BigDecimal = BigDecimal.ZERO
-
-    @NotNull
-    @Size(
-        min = 2,
-        max = 255,
-        message = "Name is required, maximum 255 characters."
-    )
-    @Column(name = "item_name", nullable = false)
-    var name: String = ""
-
-    @Future
-    var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
-
-    @Column(name = "buy_now_price", nullable = false)
-    var buyNowPrice: BigDecimal = BigDecimal.ZERO
-
-    @Transient
-    private var bids: MutableSet<Bid> = hashSetOf()
-
     fun getBids(): Set<Bid> {
         return bids.toSet()
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    var category: Category? = null
-
-    @JvmOverloads
-    constructor(
-        name: String,
-        auctionEnd: Instant,
-        buyNowPrice: BigDecimal = BigDecimal.ZERO,
-        category: Category? = null
-    ) : this() {
-        this.name = name
-        this.category = category
-        this.buyNowPrice = buyNowPrice
-        this.auctionEnd = auctionEnd
     }
 
     fun addBid(bid: Bid) {
@@ -148,10 +150,28 @@ data class Item(
         if (currentHighestBid == null ||
             bidAmount > currentHighestBid.amount
         ) {
-            return Bid(bidAmount, this)
+            return Bid(amount = bidAmount, item = this)
         }
         return null
     }
 
     fun getId() = id
+
+    override fun toString(): String {
+        return "Item: [id=$id, " +
+                "name=$name, " +
+                "categoryName=${category?.name}, " +
+                "createdOn=$createdOn, " +
+                "lastModified=$lastModified]"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        val o: Item = (other as? Item) ?: return false
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }

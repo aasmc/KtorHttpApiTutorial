@@ -50,7 +50,7 @@ internal class ItemBidSummaryTest: AbstractTest() {
                 bid.item = item
                 persist(bid)
             }
-            item.getId()
+            item.getId()!!
         }
         return@runBlocking when(result) {
             is Result.Success -> result.data

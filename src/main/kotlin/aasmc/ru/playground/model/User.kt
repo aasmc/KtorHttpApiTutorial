@@ -1,58 +1,20 @@
 package aasmc.ru.playground.model
 
 import jakarta.persistence.*
-import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 
 @Entity
 @Table(name = "USERS")
-data class User(
+class User(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, updatable = false)
-    private var id: Long = 0L
-) {
-
-    @JvmOverloads
-    constructor(
-        id: Long,
-        username: String,
-        homeAddress: Address,
-        billingAddress: Address? = null
-    ) : this(id) {
-        this.username = username
-        this.homeAddress = homeAddress
-        this.billingAddress = billingAddress
-    }
-
-    @JvmOverloads
-    constructor(
-        username: String,
-        homeAddress: Address,
-        billingAddress: Address? = null
-    ) : this() {
-        this.username = username
-        this.homeAddress = homeAddress
-        this.billingAddress = billingAddress
-    }
-
-
+    private var id: Long = 0L,
     @Column(name = "username", nullable = false)
-    var username: String = ""
-
+    var username: String = "",
     @Embedded
-    var homeAddress: Address = Address()
-        // we can return a copy of a field in a getter method
-        // since Hibernate compares them by value, not by object identity
-        // N.B. YOU MUST NOT copy or clone collections, because Hibernate
-        // compares them by object identity.
-        get() = Address(
-            street = field.street,
-            city = field.city
-        )
-
+    private var homeAddress: Address = Address(),
     @Embedded
-    // Not necessary...
     @AttributeOverrides(
         *[
             AttributeOverride(
@@ -73,11 +35,21 @@ data class User(
             )
         ]
     )
-    var billingAddress: Address? = null
-        get() = if (field == null) null else Address(
-            street = field!!.street,
-            city = field!!.city
-        )
+    private var billingAddress: Address? = null
+) {
+
+
+    fun getHomeAddress(): Address {
+        // we can return a copy of a field in a getter method
+        // since Hibernate compares them by value, not by object identity
+        // N.B. YOU MUST NOT copy or clone collections, because Hibernate
+        // compares them by object identity.
+        return homeAddress.copy()
+    }
+
+    fun getBillingAddress(): Address? {
+        return billingAddress?.copy()
+    }
 
     fun calcShippingCosts(fromLocation: Address): BigDecimal {
         // stub method

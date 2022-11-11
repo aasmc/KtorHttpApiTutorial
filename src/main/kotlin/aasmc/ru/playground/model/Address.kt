@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull
 import kotlinx.serialization.Serializable
 
 @Embeddable
-class Address(
+data class Address(
     @NotNull
     @Column(nullable = false)
     var street: String = "",

@@ -5,7 +5,7 @@ import jakarta.persistence.Embeddable
 import jakarta.validation.constraints.NotNull
 
 @Embeddable
-class City(
+data class City(
     @NotNull
     @Column(nullable = false, length = 5)
     var zipcode: String = "",

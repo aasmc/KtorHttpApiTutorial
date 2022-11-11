@@ -15,8 +15,10 @@ class OrdersMapper(
 
     override fun mapToEntity(domain: Order): CachedOrder = CachedOrder(
         number = domain.number,
-        items = domain.contents.map(itemsMapper::mapToEntity)
-    ).also {
+    ).apply {
+        items = domain.contents.map(itemsMapper::mapToEntity).toMutableSet()
+    }
+        .also {
         it.items.forEach { item -> item.order = it }
     }
 }

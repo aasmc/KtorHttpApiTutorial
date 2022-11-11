@@ -15,7 +15,7 @@ data class CachedCustomer(
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     var id: String = "",
-): java.io.Serializable {
+) {
     @Column(name = "first_name", nullable = false)
     var firstName: String = ""
     @Column(name = "last_name", nullable = false)
