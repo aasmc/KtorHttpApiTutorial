@@ -1,5 +1,6 @@
 package aasmc.ru.playground.model
 
+import aasmc.ru.playground.converters.MonetaryAmountConverter
 import jakarta.persistence.*
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotNull
@@ -68,8 +69,12 @@ class Item(
     @Column(name = "item_name", nullable = false)
     var name: String = "",
 
-    @Column(name = "buy_now_price", nullable = false)
-    var buyNowPrice: BigDecimal = BigDecimal.ZERO,
+    @Convert( // optional, since autoApply is true in the @Converter
+        converter = MonetaryAmountConverter::class,
+        disableConversion = false
+    )
+    @Column(name = "PRICE", nullable = false, length = 63)
+    var buyNowPrice: MonetaryAmount = MonetaryAmount(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     var category: Category? = null,
