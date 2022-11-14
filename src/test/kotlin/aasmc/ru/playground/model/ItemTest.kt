@@ -3,17 +3,22 @@ package aasmc.ru.playground.model
 import aasmc.ru.data.cache.withEntityManager
 import aasmc.ru.domain.model.Result
 import aasmc.ru.playground.AbstractTest
+import aasmc.ru.playground.copy
 import jakarta.validation.Validation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.hibernate.Session
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.util.*
 
-internal class ItemTest: AbstractTest() {
+@OptIn(ExperimentalCoroutinesApi::class)
+internal class ItemTest : AbstractTest() {
 
     @Test
     fun validateItem() {
@@ -34,7 +39,6 @@ internal class ItemTest: AbstractTest() {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun metricImperialTransformerExampleTest() = runTest {
         storeItemsAndBids()
@@ -50,6 +54,66 @@ internal class ItemTest: AbstractTest() {
             ).setParameter("w", 2.0).resultList
             assertEquals(1, result.size)
             assertEquals("Some item", result[0].name)
+        }
+    }
+
+    @Test
+    fun storeLoadProperties() = runTest {
+        val idResult = entityManagerFactory.withEntityManager {
+            val someItem = Item()
+            someItem.name = "Some Item"
+            someItem.description = "This is some description"
+            val bytes = ByteArray(131072)
+            Random().nextBytes(bytes)
+            someItem.image = bytes
+            persist(someItem)
+            someItem.getId()
+        }
+        advanceUntilIdle()
+        assertTrue(idResult is Result.Success)
+        val id = (idResult as Result.Success).data!!
+        entityManagerFactory.withEntityManager {
+            val item = find(Item::class.java, id)
+            assertEquals("This is some description", item.description)
+            assertEquals(131072, item.image!!.size)
+        }
+    }
+
+    @Test
+    fun storeLoadLOB() = runTest {
+        val idResult = entityManagerFactory.withEntityManager {
+            val someItem = Item()
+            someItem.name = "Some Item"
+            someItem.description = "This is some description"
+
+            val bytes = ByteArray(131072)
+            Random().nextBytes(bytes)
+            val imageInputStream = ByteArrayInputStream(bytes)
+            val byteLength = bytes.size.toLong()
+
+            val session = unwrap(Session::class.java)
+            val blob = session.lobHelper
+                .createBlob(imageInputStream, byteLength)
+
+            someItem.imageBlog = blob
+            persist(someItem)
+            someItem.getId()
+        }
+
+        advanceUntilIdle()
+        assertTrue(idResult is Result.Success)
+        val id = (idResult as Result.Success).data!!
+
+        entityManagerFactory.withEntityManager {
+            val item = find(Item::class.java, id)
+            // you can stream the bytes directly
+            val imageDataStream = item.imageBlog!!.binaryStream
+
+            // or materialize them into memory
+            val outStream = ByteArrayOutputStream()
+            copy(imageDataStream, outStream)
+            val imageBytes = outStream.toByteArray()
+            assertEquals(imageBytes.size, 131072)
         }
     }
 
@@ -69,3 +133,20 @@ internal class ItemTest: AbstractTest() {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -79,6 +79,17 @@ class Item(
     @Column(length = 131072, nullable = true) // 128 kilobytes maximum for the picture
     var image: ByteArray? = null
 
+    /**
+     * Type [Blob] annotated with [Lob] ensures that
+     * the value is loaded lazily from the DB without any
+     * bytecode instrumentation.
+     *
+     * Blob and Clob JDBC classes include behaviour to load values on demand.
+     * When the owning entity instance is loaded, the property value is a placeholder,
+     * and the real value isn't immediately materialized. Once you access the property,
+     * within the same transaction, the value is materialized or even streamed directly
+     * (to the client) without consuming temporary memory.
+     */
     @Lob
     var imageBlog: Blob? = null
 
