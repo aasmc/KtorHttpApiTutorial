@@ -4,7 +4,7 @@ import aasmc.ru.playground.model.MonetaryAmount
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 class MonetaryAmountConverter : AttributeConverter<MonetaryAmount, String> {
 
     override fun convertToDatabaseColumn(attribute: MonetaryAmount): String {

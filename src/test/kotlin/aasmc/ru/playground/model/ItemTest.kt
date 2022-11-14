@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
@@ -115,6 +116,33 @@ internal class ItemTest : AbstractTest() {
             val imageBytes = outStream.toByteArray()
             assertEquals(imageBytes.size, 131072)
         }
+    }
+
+    @Test
+    fun testMonetaryAmountCompositeType() = runTest {
+        val idResult = entityManagerFactory.withEntityManager {
+            val someItem = Item()
+            someItem.name = "Some Item"
+            someItem.description = "This is some description"
+            someItem.customPrice = MonetaryAmount(
+                value = BigDecimal.ONE,
+                currency = Currency.getInstance("EUR")
+            )
+            persist(someItem)
+            someItem.getId()
+        }
+        advanceUntilIdle()
+        assertTrue(idResult is Result.Success)
+        val id = (idResult as Result.Success).data!!
+        val res = entityManagerFactory.withEntityManager {
+            find(Item::class.java, id)
+        }
+
+        advanceUntilIdle()
+        assertTrue(res is Result.Success)
+        val item = (res as Result.Success).data
+        assertTrue(BigDecimal.ONE.compareTo(item.customPrice!!.value) == 0)
+        assertEquals(item.customPrice!!.currency.currencyCode, "EUR")
     }
 
     private fun storeItemsAndBids() = runBlocking {

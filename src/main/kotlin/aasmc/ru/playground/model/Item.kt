@@ -1,12 +1,15 @@
 package aasmc.ru.playground.model
 
 import aasmc.ru.playground.converters.MonetaryAmountConverter
+import aasmc.ru.playground.converters.MonetaryAmountUserType
 import jakarta.persistence.*
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.CompositeType
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
+import org.hibernate.annotations.Type
 import java.math.BigDecimal
 import java.sql.Blob
 import java.time.Instant
@@ -60,6 +63,12 @@ class Item(
     )
     var initialPrice: BigDecimal = BigDecimal.ZERO,
 
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "custom_price_amount"))
+    @AttributeOverride(name = "currency", column = Column(name = "custom_price_currency"))
+    @CompositeType(MonetaryAmountUserType::class)
+    var customPrice: MonetaryAmount? = null,
+
     @NotNull
     @Size(
         min = 2,
@@ -69,7 +78,7 @@ class Item(
     @Column(name = "item_name", nullable = false)
     var name: String = "",
 
-    @Convert( // optional, since autoApply is true in the @Converter
+    @Convert(
         converter = MonetaryAmountConverter::class,
         disableConversion = false
     )
