@@ -5,7 +5,7 @@ import aasmc.ru.playground.inheritance.joined.BankAccount
 import aasmc.ru.playground.inheritance.joined.BillingDetails
 import aasmc.ru.playground.inheritance.joined.CreditCard
 
-class InheritanceEntityProvider : EntityProvider {
+class InheritanceEntityProviderManyToOne : EntityProvider {
     override fun provideEntities(): Array<Class<*>> {
         return arrayOf(
             BillingDetails::class.java,
