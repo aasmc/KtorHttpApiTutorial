@@ -39,4 +39,8 @@ abstract class BillingDetails constructor() {
         this.owner = owner
     }
 
+    fun pay(amount: Int) {
+        println("Paying amount: $amount")
+    }
+
 }

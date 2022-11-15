@@ -1,6 +1,5 @@
 package aasmc.ru.playground.inheritance.joined
 
-import aasmc.ru.playground.inheritance.singletable.BillingDetails
 import jakarta.persistence.Entity
 import jakarta.validation.constraints.NotNull
 
