@@ -2,8 +2,10 @@ package aasmc.ru.playground.inheritance.manytoone
 
 import aasmc.ru.data.cache.withEntityManager
 import aasmc.ru.domain.model.Result
-import aasmc.ru.playground.AbstractInheritanceTestManyToOne
+import aasmc.ru.playground.AbstractTest
 import aasmc.ru.playground.inheritance.associations.manytoone.User
+import aasmc.ru.playground.inheritance.joined.BankAccount
+import aasmc.ru.playground.inheritance.joined.BillingDetails
 import aasmc.ru.playground.inheritance.joined.CreditCard
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -13,7 +15,16 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PolymorphicManyToOne : AbstractInheritanceTestManyToOne() {
+class PolymorphicManyToOne : AbstractTest(
+    entityProvider = {
+        arrayOf(
+            BillingDetails::class.java,
+            User::class.java,
+            CreditCard::class.java,
+            BankAccount::class.java
+        )
+    }
+) {
     @Test
     fun storeAndLoadUsers() = runTest {
         val idRes = entityManagerFactory.withEntityManager {

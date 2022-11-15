@@ -1,8 +1,9 @@
 package aasmc.ru.playground.inheritance.onetomany
 
+import aasmc.ru.cache.hibernateproviders.InheritanceEntityProviderOneToMany
 import aasmc.ru.data.cache.withEntityManager
 import aasmc.ru.domain.model.Result
-import aasmc.ru.playground.AbstractInheritanceTestOneToMany
+import aasmc.ru.playground.AbstractTest
 import aasmc.ru.playground.inheritance.associations.onetomany.BankAccount
 import aasmc.ru.playground.inheritance.associations.onetomany.CreditCard
 import aasmc.ru.playground.inheritance.associations.onetomany.User
@@ -12,7 +13,9 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class PolymorphicOneToMany: AbstractInheritanceTestOneToMany() {
+class PolymorphicOneToMany: AbstractTest(
+    entityProvider = InheritanceEntityProviderOneToMany()
+) {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun storeAndLoadUsers() = runTest {

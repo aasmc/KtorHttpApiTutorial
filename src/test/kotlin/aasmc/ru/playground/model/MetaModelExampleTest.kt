@@ -14,8 +14,8 @@ class MetaModelExampleTest : AbstractTest (){
         val metaModel = entityManagerFactory.metamodel
         val managedTypes = metaModel.managedTypes
         // there are 4 entities: Bid, Item, Category, User
-        // and 2 @Embeddable type Address and City
-        assertEquals(6, managedTypes.size)
+        // and 3 @Embeddable type Address and City MonetaryAmount
+        assertEquals(7, managedTypes.size)
 
         val list = managedTypes.toList()
         val itemType = list.filter { it.javaType == Item::class.java }
