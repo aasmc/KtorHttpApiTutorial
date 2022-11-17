@@ -3,13 +3,13 @@ package aasmc.ru.playground.model
 import aasmc.ru.playground.converters.MonetaryAmountConverter
 import aasmc.ru.playground.converters.MonetaryAmountUserType
 import jakarta.persistence.*
+import jakarta.persistence.CascadeType
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CompositeType
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import org.hibernate.annotations.Type
 import java.math.BigDecimal
 import java.sql.Blob
 import java.time.Instant
@@ -130,7 +130,29 @@ class Item(
     @Future
     var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
 
-    @Transient
+    @OneToMany(
+        mappedBy = "item",
+        fetch = FetchType.LAZY, // the default
+        // deletion of all the bids is inefficient, because Hibernate has to load
+        // all bids and delete them one by one, instead of executing a single
+        // query: DELETE FROM BIDS WHERE BIDS.ITEM_ID = ITEM_ID
+        cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
+        orphanRemoval = true
+    )
+    // This annotation creates a DB ForeignKey ON DELETE option, i.e.
+    // if an Item is removed from the DB and it has BIDs, referencing
+    // to it by ForeignKey, then the BIDs will be removed efficiently,
+    // in a single DELETE statement. No BID will be loaded into the application
+    // memory, deletion will happen in the DB.
+    // This option is valid if Hibernate generates schema.
+    // N.B. It's the programmer's responsibility to clean up any references,
+    // after the deletion happened in the DB.
+    // Additionally, the BID instances don't go through the regular life cycle, and
+    // callbacks such as @PreRemove have no effect. And Hibernate doesn't automatically
+    // clear the optional second-level cache, which potentially contains stale data.
+    @org.hibernate.annotations.OnDelete(
+        action = org.hibernate.annotations.OnDeleteAction.CASCADE
+    )
     private var bids: MutableSet<Bid> = hashSetOf()
 
     // Values of derived properties are calculated at runtime by evaluating

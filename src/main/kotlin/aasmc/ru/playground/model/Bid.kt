@@ -37,7 +37,7 @@ class Bid(
     var amount: BigDecimal = BigDecimal.ZERO,
 
     /**
-     * One Item can have many Bids.
+     * One Item can have many Bids. Default FetchType is EAGER
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ITEM_ID")

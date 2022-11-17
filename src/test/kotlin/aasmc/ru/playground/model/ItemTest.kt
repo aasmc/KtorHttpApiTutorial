@@ -145,6 +145,27 @@ internal class ItemTest : AbstractTest() {
         assertEquals(item.customPrice!!.currency.currencyCode, "EUR")
     }
 
+    @Test
+    fun testBidOneToMany() = runTest {
+        val idRes = entityManagerFactory.withEntityManager {
+            val item = Item(description = "Description", name = "Name")
+            val bidOne = Bid(amount = BigDecimal.TEN)
+            val bidTwo = Bid(amount = BigDecimal.ONE)
+            val bidThree= Bid(amount = BigDecimal.valueOf(3L))
+            item.addBid(bidOne)
+            item.addBid(bidTwo)
+            item.addBid(bidThree)
+            persist(item)
+            item.getId()
+        }
+        assertTrue(idRes is Result.Success)
+        val id = (idRes as Result.Success).data!!
+        entityManagerFactory.withEntityManager {
+            val item = find(Item::class.java, id)
+            assertEquals(3, item.getBids())
+        }
+    }
+
     private fun storeItemsAndBids() = runBlocking {
         entityManagerFactory.withEntityManager {
             val item = Item()
