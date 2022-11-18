@@ -1,4 +1,4 @@
-package aasmc.ru.playground.associations.onetoone.sharedprimarykey
+package aasmc.ru.playground.associations.onetoone.foreignkey
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
