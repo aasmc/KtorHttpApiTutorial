@@ -24,7 +24,8 @@ class Shipment protected constructor() {
     // Hibernate uses an Item placeholder.
     @OneToOne(fetch = FetchType.LAZY)
     // This mapping creates another table ITEM_SHIPMENT with a one to one
-    // mapping between an Item and a Shipment.
+    // mapping between an Item and a Shipment. This means it is an optional
+    // OneToOne mapping.
     @JoinTable(
         name = "ITEM_SHIPMENT", // Required
         joinColumns = [
