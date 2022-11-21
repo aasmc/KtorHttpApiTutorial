@@ -19,8 +19,8 @@ class TestDatabaseFactory(
     private val emFactory: EntityManagerFactory by lazy() { createLazyEMFactory() }
 
     override fun createSessionFactory(): SessionFactory {
-        TODO("Not yet implemented")
-        // will not be used in tests
+        val emf = createEntityManagerFactory()
+        return emf.unwrap(SessionFactory::class.java)
     }
 
     override fun createEntityManagerFactory(): EntityManagerFactory {
