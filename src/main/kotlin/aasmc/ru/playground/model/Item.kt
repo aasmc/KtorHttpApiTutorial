@@ -87,6 +87,10 @@ class Item(
 
     @ManyToOne(fetch = FetchType.LAZY)
     var category: Category? = null,
+
+    @Future
+    var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS),
+
 ) {
 
     @Basic(fetch = FetchType.LAZY)
@@ -127,8 +131,6 @@ class Item(
     @Version
     private var version: Long = 0
 
-    @Future
-    var auctionEnd: Instant = Instant.now().plus(10, ChronoUnit.DAYS)
 
     @OneToMany(
         mappedBy = "item",
@@ -186,9 +188,6 @@ class Item(
     }
 
     fun addBid(bid: Bid) {
-        if (bid.item != null) {
-            throw IllegalStateException("Bid is already assigned to an Item ${bid.item}")
-        }
         bids.add(bid)
         bid.item = this
     }
@@ -202,7 +201,7 @@ class Item(
         return null
     }
 
-    fun getId() = id
+    fun getId() = id ?: -1
 
     override fun toString(): String {
         return "Item: [id=$id, " +
@@ -215,7 +214,7 @@ class Item(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val o: Item = (other as? Item) ?: return false
-        return id != null && id == other.id
+        return id != null && id == o.id
     }
 
     override fun hashCode(): Int {

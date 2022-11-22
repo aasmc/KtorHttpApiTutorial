@@ -5,6 +5,9 @@ import aasmc.ru.domain.model.Result
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
 import jakarta.persistence.EntityTransaction
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.Transaction
@@ -39,6 +42,9 @@ suspend fun <T> SessionFactory.withSession(block: suspend Session.() -> T): Resu
         }
         return Result.Success(data)
     } catch (t: Throwable) {
+        if (t is CancellationException) {
+            throw t
+        }
         if (transaction != null && transaction.isActive) {
             try {
                 transaction.rollback()
@@ -49,7 +55,7 @@ suspend fun <T> SessionFactory.withSession(block: suspend Session.() -> T): Resu
         return Result.Failure(
             OperationFailedException(
                 message = "Operation with the database failed",
-                cause = t.cause
+                cause = t
             )
         )
     } finally {
@@ -57,7 +63,9 @@ suspend fun <T> SessionFactory.withSession(block: suspend Session.() -> T): Resu
     }
 }
 
-suspend fun <T> EntityManagerFactory.withEntityManager(block: suspend EntityManager.() -> T): Result<T> {
+suspend fun <T> EntityManagerFactory.withEntityManager(
+    block: suspend EntityManager.() -> T
+): Result<T> {
     var entityManager: EntityManager? = null
     var txn: EntityTransaction? = null
     try {
@@ -76,6 +84,9 @@ suspend fun <T> EntityManagerFactory.withEntityManager(block: suspend EntityMana
         }
         return Result.Success(result)
     } catch (t: Throwable) {
+        if (t is CancellationException) {
+            throw t
+        }
         if (txn != null && txn.isActive) {
             try {
                 txn.rollback()
@@ -86,7 +97,7 @@ suspend fun <T> EntityManagerFactory.withEntityManager(block: suspend EntityMana
         return Result.Failure(
             OperationFailedException(
                 message = "Operation with the database failed",
-                cause = t.cause
+                cause = t
             )
         )
     } finally {
