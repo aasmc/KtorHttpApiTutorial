@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -166,6 +167,26 @@ class ReadOnly : AbstractTest(
         assertTrue(itemRes is Result.Success)
         val item = itemRes.data
         assertNotEquals("New Name", item.name)
+    }
+
+    @Test
+    fun multiplyQuery() = runTest {
+        val testData = storeTestData()
+
+        val res = entityManagerFactory.withEntityManager {
+            val session = unwrap(Session::class.java)
+            val users = session.byMultipleIds(User::class.java)
+                .multiLoad(1L, 2L, 3L)
+
+            assertEquals(3, users.size)
+
+            val sameUsers = session
+                .byMultipleIds(User::class.java)
+                .enableSessionCheck(true)
+                .multiLoad(1L, 2L, 3L)
+            assertEquals(users, sameUsers)
+        }
+        assertTrue(res is Result.Success)
     }
 }
 
