@@ -102,7 +102,7 @@ class ReadOnly : AbstractTest(
     @Test
     fun immutableEntity() = runTest {
         val testData = storeTestData()
-        val itemId = testData.items.gerFirstId()
+        val itemId = testData.items.getFirstId()
 
         entityManagerFactory.withEntityManager {
             val item = find(Item::class.java, itemId)
@@ -130,7 +130,7 @@ class ReadOnly : AbstractTest(
     fun selectiveReadOnly() = runTest {
         val testData = storeTestData()
 
-        val itemId = testData.items.gerFirstId()
+        val itemId = testData.items.getFirstId()
         val itemRes = entityManagerFactory.withEntityManager {
             unwrap(Session::class.java).isDefaultReadOnly = true
             val item = find(Item::class.java, itemId)

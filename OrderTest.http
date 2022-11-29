@@ -1,18 +1,18 @@
 GET http://127.0.0.1:8080/order
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzAxMDMwMjgwLCJ1c2VySWQiOiIxIn0.GO10yTwLJo15EBuuxaF-PSnc4wq52Aw5FsOlRLiGfQ0
 
 
 ###
 GET http://127.0.0.1:8080/order/2020-04-06-01
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzAxMDMwMjgwLCJ1c2VySWQiOiIxIn0.GO10yTwLJo15EBuuxaF-PSnc4wq52Aw5FsOlRLiGfQ0
 
 
 ###
 GET http://127.0.0.1:8080/order/2020-04-06-01/total
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzQ2MjI0MDM3LCJ1c2VySWQiOiIxIn0.zuukCo8Emjn1Dol8-zPUqiabZPFMfbfpvLIoftLUMb4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjdXN0b21lcnMiLCJpc3MiOiJodHRwOi8vMC4wLjAuMDo4MDgwIiwiZXhwIjoxNzAxMDMwMjgwLCJ1c2VySWQiOiIxIn0.GO10yTwLJo15EBuuxaF-PSnc4wq52Aw5FsOlRLiGfQ0
 
 ###
 GET http://127.0.0.1:8080/order/2020-04-06-01/total

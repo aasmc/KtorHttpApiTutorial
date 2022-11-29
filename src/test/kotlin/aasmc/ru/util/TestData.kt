@@ -1,9 +1,9 @@
 package aasmc.ru.util
 
 class TestData(
-    private val identifiers: LongArray = longArrayOf()
+    val identifiers: LongArray = longArrayOf()
 ) {
-    fun gerFirstId(): Long {
+    fun getFirstId(): Long {
         return if (identifiers.isNotEmpty())
             identifiers[0]
         else throw IllegalStateException(
