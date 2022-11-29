@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Versioning : AbstractTest(
+open class Versioning : AbstractTest(
     entityProvider = {
         arrayOf(
             Bid::class.java,
