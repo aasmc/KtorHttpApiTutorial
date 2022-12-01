@@ -19,15 +19,24 @@ abstract class AbstractTest(
         entityProvider = entityProvider
     )
 
+    open fun afterJpaBootStrap() {
+
+    }
+
+    open fun beforeJpaClose() {
+
+    }
 
     @BeforeEach
     fun setup() {
         entityManagerFactory = dbFactory.createEntityManagerFactory()
         sessionFactory = dbFactory.createSessionFactory()
+        afterJpaBootStrap()
     }
 
     @AfterEach
     fun tearDown() {
+        beforeJpaClose()
         if (this::entityManagerFactory.isInitialized) {
             entityManagerFactory.close()
         }

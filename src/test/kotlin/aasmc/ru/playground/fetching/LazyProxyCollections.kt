@@ -30,6 +30,13 @@ class LazyProxyCollections: AbstractTest(
         )
     }
 ) {
+
+    private lateinit var loadEventListener: FetchLoadEventListener
+
+    override fun afterJpaBootStrap() {
+        loadEventListener = FetchLoadEventListener(entityManagerFactory)
+    }
+
     private fun storeTestData(): FetchTestData = runBlocking {
         val res = entityManagerFactory.withEntityManager {
             val categoryIds = LongArray(3)
@@ -72,7 +79,7 @@ class LazyProxyCollections: AbstractTest(
             val itemTwo = Item(
                 name = "Item Two",
                 auctionEnd = LocalDate.now().plusDays(1),
-                seller = johnDoe
+                seller = robDoe
             )
             persist(itemTwo)
             itemIds[1] = itemTwo.id!!
@@ -230,6 +237,46 @@ class LazyProxyCollections: AbstractTest(
 
         assertTrue(res is Result.Success)
     }
+
+    @Test
+    fun nPlusOneSelectProblem() = runTest {
+        val td = storeTestData()
+        loadEventListener.reset()
+        val res = entityManagerFactory.withEntityManager {
+            val items = createQuery("select i from Item i", Item::class.java).resultList
+            // select * from ITEM
+            assertEquals(loadEventListener.getLoadCount(Item::class.java), 3)
+            assertEquals(loadEventListener.getLoadCount(User::class.java), 0)
+
+            for (i in items) {
+                // Each seller has to be loaded with an additional SELECT
+                assertTrue(i.seller.username.isNotBlank())
+                // select * from USERS where ID = ?
+            }
+            assertEquals(3, loadEventListener.getLoadCount(User::class.java))
+        }
+        assertTrue(res is Result.Success)
+
+        val res2 = entityManagerFactory.withEntityManager {
+            loadEventListener.reset()
+            val items = createQuery("select i from Item i", Item::class.java).resultList
+            // select * from ITEM
+            assertEquals(loadEventListener.getLoadCount(Item::class.java), 3)
+            assertEquals(loadEventListener.getLoadCount(Bid::class.java), 0)
+
+            for (i in items) {
+                // Each bids collection has to be loaded with an additional SELECT
+                for (b in i.bids) {
+                    assertNotNull(b.item)
+                }
+                // select * from BID where ITEM_ID = ?
+            }
+            assertEquals(4, loadEventListener.getLoadCount(Bid::class.java))
+        }
+        assertTrue(res2 is Result.Success)
+    }
+
+
 }
 
 
