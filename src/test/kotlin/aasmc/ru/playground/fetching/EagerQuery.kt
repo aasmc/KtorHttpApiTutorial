@@ -6,7 +6,6 @@ import aasmc.ru.playground.AbstractTest
 import aasmc.ru.playground.fetching.nplusoneselects.Bid
 import aasmc.ru.playground.fetching.nplusoneselects.Item
 import aasmc.ru.playground.fetching.nplusoneselects.User
-import aasmc.ru.playground.fetching.proxy.Category
 import aasmc.ru.util.TestData
 import jakarta.persistence.criteria.JoinType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -131,6 +130,8 @@ class EagerQuery: AbstractTest(
     fun fetchBids() = runTest {
         storeTestData()
         val res = entityManagerFactory.withEntityManager {
+            // For collections a LEFT OUTER JOIN is necessary, because we also want
+            // rows from the ITEM table if there are no BIDs.
             val items = createQuery(
                 "select i from Item i left join fetch i.bids", Item::class.java
             ).resultList

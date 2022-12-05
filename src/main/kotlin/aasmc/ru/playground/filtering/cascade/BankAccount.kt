@@ -1,4 +1,4 @@
-package aasmc.ru.playground.inheritance.joined
+package aasmc.ru.playground.filtering.cascade
 
 import jakarta.persistence.Entity
 import jakarta.validation.constraints.NotNull
@@ -6,25 +6,20 @@ import jakarta.validation.constraints.NotNull
 @Entity
 class BankAccount: BillingDetails {
     constructor(): super()
-
     @NotNull
     var account: String = ""
-
     @NotNull
-    var bankName: String = ""
-
+    var bankname: String = ""
     @NotNull
     var swift: String = ""
-
     constructor(
-        owner: String,
         account: String,
         bankname: String,
-        swift: String
-    ) : super(owner) {
+        swift: String,
+        owner: String
+    ): super(owner = owner) {
         this.account = account
-        this.bankName = bankname
+        this.bankname = bankname
         this.swift = swift
     }
-
 }

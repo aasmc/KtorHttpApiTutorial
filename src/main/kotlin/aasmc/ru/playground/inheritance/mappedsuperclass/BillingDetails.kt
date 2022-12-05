@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull
 /**
  * Problems with implicit inheritance:
  * - doesn't support polymorphic associations very well: if subclasses are mapped to different
- *   tables, a polymorphic association wo their superclass (abstract class BillingDetails) can't
+ *   tables, a polymorphic association to their superclass (abstract class BillingDetails) can't
  *   be represented as a simple foreign key relationship.
  * - Polymorphic queries that return instances of all classes that match the interface of the queried
  *   class are also problematic: Hibernate must execute a query against the superclass as several
