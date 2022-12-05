@@ -64,12 +64,13 @@ suspend fun <T> SessionFactory.withSession(block: suspend Session.() -> T): Resu
 }
 
 suspend fun <T> EntityManagerFactory.withEntityManager(
+    options: Map<String, String> = hashMapOf(),
     block: suspend EntityManager.() -> T
 ): Result<T> {
     var entityManager: EntityManager? = null
     var txn: EntityTransaction? = null
     try {
-        entityManager = createEntityManager()
+        entityManager = createEntityManager(options)
         txn = entityManager.transaction
         txn.begin()
         val result = block(entityManager)
