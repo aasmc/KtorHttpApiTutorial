@@ -40,6 +40,8 @@ class AuditLogging : AbstractTest(
             to
             AuditLogInterceptor::class.java.name
         )
+        // TODO figure out why the test fails: Session doesn't have the interceptor
+        // which is defined in options map.
         val itemRes = entityManagerFactory.withEntityManager(options) {
             val session = unwrap(Session::class.java)
             val interceptor = (session as SessionImplementor).interceptor as AuditLogInterceptor

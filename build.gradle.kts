@@ -57,6 +57,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcache_version")
 
     implementation("org.hibernate:hibernate-core:$hibernate_version")
+    implementation("org.hibernate:hibernate-envers:$hibernate_version")
     implementation("org.hibernate.orm:hibernate-hikaricp:$hibernate_version")
     implementation ("com.zaxxer:HikariCP:$hikari_version")
 
