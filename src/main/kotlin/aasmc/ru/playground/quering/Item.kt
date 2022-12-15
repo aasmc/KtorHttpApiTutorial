@@ -57,8 +57,10 @@ class Item(
     @NotNull
     var name: String = "",
     @NotNull
+    @Temporal(TemporalType.DATE)
     var createdOn: LocalDate = LocalDate.now(),
     @NotNull
+    @Temporal(TemporalType.DATE)
     var auctionEnd: LocalDate = LocalDate.now().plusDays(1),
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -66,7 +68,7 @@ class Item(
     @NotNull
     var approved: Boolean = false,
 
-    var buyNowPrice: BigDecimal = BigDecimal.ZERO,
+    var buyNowPrice: BigDecimal? = null,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "FK_ITEM_SELLER_ID"))
