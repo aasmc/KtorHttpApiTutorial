@@ -72,13 +72,13 @@ class Item(
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "FK_ITEM_SELLER_ID"))
-    var seller: User = User()
+    var seller: User? = User()
 ) {
     @ManyToMany(mappedBy = "items")
     var categories: MutableSet<Category> = hashSetOf()
 
     @OneToMany(mappedBy = "item")
-    var bids: MutableSet<Bid> = hashSetOf()
+    var bids: MutableSet<Bid>? = hashSetOf()
 
     @ElementCollection
     @JoinColumn(foreignKey = ForeignKey(name = "FK_ITEM_IMAGES_ITEM_ID"))

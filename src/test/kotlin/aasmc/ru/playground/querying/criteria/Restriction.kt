@@ -7,6 +7,7 @@ import aasmc.ru.playground.quering.User
 import aasmc.ru.playground.querying.AbstractQueryTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hibernate.dialect.function.SqlFunction
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -19,23 +20,24 @@ class Restriction: AbstractQueryTest() {
         val td = storeTestData()
         val cb = entityManagerFactory.criteriaBuilder
         val res = entityManagerFactory.withEntityManager {
-            var ic = cb.createQuery(Item::class.java)
+            val ic = cb.createQuery(Item::class.java)
             val root = ic.from(Item::class.java)
             ic.select(root).where(
                 cb.equal(root.get<String>("name"), "Foo")
             )
-            var iq = createQuery(ic)
+            val iq = createQuery(ic)
             assertEquals(iq.resultList.size, 1)
             assertEquals(iq.resultList.iterator().next().name, "Foo")
             clear()
 
-            var uc = cb.createQuery(User::class.java)
+            val uc = cb.createQuery(User::class.java)
             val uRoot = uc.from(User::class.java)
             uc.select(uRoot).where(
                 cb.equal(uRoot.get<Boolean>("activated"), true)
             )
-            var uq = createQuery(uc)
+            val uq = createQuery(uc)
             assertEquals(uq.resultList.size, 2)
+
         }
         assertTrue(res is Result.Success)
     }

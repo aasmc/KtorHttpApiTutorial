@@ -16,7 +16,7 @@ class Bid(
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "FK_BID_BIDDER_ID"))
-    var user: User = User(),
+    var bidder: User? = User(),
 
     @NotNull
     var amount: BigDecimal = BigDecimal.ZERO

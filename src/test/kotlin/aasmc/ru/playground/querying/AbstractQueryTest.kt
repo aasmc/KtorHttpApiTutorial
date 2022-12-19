@@ -61,8 +61,8 @@ abstract class AbstractQueryTest: AbstractTest(
             categoryOne.items.add(item)
             item.categories.add(categoryOne)
             for (i in 1..3) {
-                val bid = Bid(item = item, user = robertdoe, amount = BigDecimal(98 + i))
-                item.bids.add(bid)
+                val bid = Bid(item = item, bidder = robertdoe, amount = BigDecimal(98 + i))
+                item.bids?.add(bid)
                 persist(bid)
             }
             item.images.add(Image("Foo", "foo.jpg", 640, 480))
@@ -79,8 +79,8 @@ abstract class AbstractQueryTest: AbstractTest(
             itemIds[1] = item.id!!
             categoryTwo.items.add(item)
             item.categories.add(categoryTwo)
-            val bid = Bid(item = item, user = janeroe, amount = BigDecimal("4.99"))
-            item.bids.add(bid)
+            val bid = Bid(item = item, bidder = janeroe, amount = BigDecimal("4.99"))
+            item.bids?.add(bid)
             persist(bid)
 
             item = Item(name = "Baz", auctionEnd = LocalDate.now().plusDays(2), seller = janeroe)
