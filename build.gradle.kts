@@ -68,6 +68,12 @@ dependencies {
 
     // Utils
     implementation("org.apache.commons:commons-lang3:3.0")
+    // https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api
+    compileOnly("jakarta.platform:jakarta.jakartaee-api:8.0.0")
+    // https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-persistence-impl
+    implementation("org.jboss.arquillian.extension:arquillian-persistence-impl:1.0.0.Alpha6")
+
+
 
     implementation("com.h2database:h2:$h2_version")
 
@@ -75,6 +81,14 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:3.1.4")
+    testImplementation("org.jboss.arquillian.testng:arquillian-testng-container:1.6.0.Final")
+    testImplementation("org.jboss.arquillian.protocol:arquillian-protocol-servlet:1.6.0.Final")
+    testImplementation("org.wildfly.arquillian:wildfly-arquillian-container-remote:3.0.1.Final")
+    testImplementation("org.jboss.arquillian.extension:arquillian-rest-client-api:1.0.0.Alpha4")
+    // https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-rest-client-impl-3x
+    testImplementation("org.jboss.arquillian.extension:arquillian-rest-client-impl-3x:1.0.0.Alpha4")
+
 }
 
 tasks.test {
