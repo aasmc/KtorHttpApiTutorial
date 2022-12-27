@@ -9,7 +9,11 @@ import java.util.*
 @org.hibernate.annotations.Immutable
 class Bid(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    /**
+     * In Hibernate 5.0 and above this mapping will select a [SequenceStyleGenerator].
+     */
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
+    @SequenceGenerator(name = "sequence", allocationSize = 3)
     var id: Long? = null,
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     var item: Item? = null,
