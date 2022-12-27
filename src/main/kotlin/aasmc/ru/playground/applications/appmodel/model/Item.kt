@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.GenericGenerator
 import java.io.Serializable
 import java.math.BigDecimal
 import java.util.*
@@ -12,7 +13,17 @@ import kotlin.collections.ArrayList
 @Entity
 class Item(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hilo")
+    @GenericGenerator(
+        name = "hilo",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = [
+            org.hibernate.annotations.Parameter(name = "sequence_name", value = "sequence"),
+            org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+            org.hibernate.annotations.Parameter(name = "increment_size", value = "3"),
+            org.hibernate.annotations.Parameter(name = "optimizer", value = "hilo")
+        ]
+    )
     var id: Long? = null,
     @NotNull
     @Size(
